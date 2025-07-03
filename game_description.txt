@@ -1,0 +1,92 @@
+Our project goal is to make a game similar to chinese wechat small game called "灵画师", the design of the original game is a pay2win style game but also allowing users to grind. I want our game to be the same. 
+
+currencies:
+In the game there are three main currencies: "银币" being the lowest tier currency that can only perform very few operations, "元宝" being the premium currency that can purchase many many items or have use cases(users have to pay money such as 648 rmb to get 6480 元宝 in the game), and lastly "天衍令" (users can pay 648 rmb to get 648 of this currency, this currency can be used anywhere in the game that requires users to pay real money). In our game, users can pay money to achieve many things, such as various battle passes, various vip automation tools. For future reference, I will refer to these currencies as silver, gold, godcoins.
+
+primary pages:
+- login/register page
+- inital profession + gender + display name selection page
+- main game home page
+- hidden admin page
+
+the login/register page appears when the user is not logged in, and blocks access to all other pages, registeration of an account should use email and password. 
+after the user is logged in, if they did not perform the initial selections(profession, gender, display name), they are directed to the initial selection page to do the selections. Once selections are done, a confirm button is for the user to click, which leads to the main game home page, each user account should only see the initial selection page only once, once the initial selection process is done, every time that the user login would lead directly to the main game home page. Also, if user login info is stored, they are automatically logged in and brought to the main game home page automatically. 
+
+the main game home page should have top, left, right, bottom navigation areas, all navigation bars should be transparent, besides of the bottom nav bar.
+top navigation features:
+- left 1/5 showing profile picture
+- rest 4/5 of top nav bar should be two rows:
+-- row 1 from left to right: display name, player 战力 value (this should be center on the X-axis), special pay2win speed up tool icons (max 3, only display each if user purchased, other wise display nothing)
+-- row 2 from left ot right: silver currency with icon and amount with a plus sign next to it for purchase, gold currency with same format as silver, godcoins currency with same format as silver too.
+- should have neccessary padding from top, left and right. 
+
+left navigation features:
+here we only display very few items, mainly buttons to bring up pay2win modals. 
+- p2w purchase modal for 掌天瓶 toggle button (button displays after reaches level 60)
+- p2w purchase modal for 星海壶 toggle button (button displays after reaches level 120)
+- 福利 p2w modal toggle button (this modal will display various 福利) (this button stays permanent)
+- 超值豪礼 p2w modal toggle button (this modal will display various various p2w 礼包, various battle pass purchase and daily loot collection) (this button stays permanent)
+- Current main mission container with loot icon and amount displayed on the left taking 1/5 of the container's space, and the rest displaying the mission objective and process such as 194/200
+
+right navigation features:
+on the right we display a few more itmes compared to the left navigation:
+- 活动 button (brings up a tool tip displaying various events, including: 每日任务[daily missions], 市场[market for purchasing various loot], 仙途[progression achievements with loot], [more events to be added])
+- 限时礼包, brings up a modal with multiple pages displayig various p2w loot packs that can be bought within limited time
+- 新手礼包, similar to 限时礼包.
+
+now we have the bottom nav bar, which is the most complicated. This one does not have a transparent background, has a solid colored background.
+the bottom nav bar splits into a top area and bottom area.
+The top area is slim and has two rows, the first row displays from the left to right: player level, cultivation realm such as 元婴中期，化神前期, current level progress bar, and a 渡劫 button which would show a new screen showing information related to 渡劫. The second row displays basic stats such as health, attack, defense, speed, with a magnifying glass button on the right handside for the user to click to bring up a modal displaying all detailed user stats. Both rows of the top area should be centered to the center of the X-axis on the screen.
+Now the bottom area of the bottom navbar is the most complicated navigation area, it can be splitted into three horizontal areas. Area 1, 2, 3.
+
+Area 1 features a 2 row 6 column grid, with each grid cell displaying a button, the first row of cells should display buttons: 法相，坐骑，魂玉，灵兽，法宝，鱼获
+the second row of cells should display buttons: 神兵，武魂，血缘，秘宝，妖灵，红颜
+Each of these buttons in Area 1 should display a new screen or new modal. 
+
+Area 2 features a complicated structure, it has a top section and bottom section, the bottom section is splitted into another 3 sub sections, with the left and right sections each displaying two buttons, left: 仙盟，洞府，right:挑战，主线. And in the middle sub section we have one slightly bigger round button with a sword in it, indicating to fight enemies on the map to acquire loot. Towards the top edge of this fight button we have text display X倍, where X is X multiple times to attack loot, and X can be upgrade through the game, initially X should = 1. Towards the bottom edge of this fight button should be a "buns（包子）" icon, and the amount of it. Each time the user fight enemies, X倍 buns is consumed. On the left hand side of the fight button is smaller round button displaying the loot drop level, intially this level should be 1. On the right hand side of the fight button, there is a smaller round button, which pressed would bring up a modal displaying automatic fighting/looting enemies options. 
+Now the top section, displays a round loot pocket button representing the user's inventory showing their loot, a round mail inbox button which shows a modal of mails, a horizontal rectangle button saying 精英怪, allowing users to summon and fight a special enemy which drops better loot. 
+This concludes Area 2 of the bottom navigation bar. 
+
+Area 3 features a 2 row 6 column grid, with each grid cell displaying an item equiped by the user. These items are non-detachable, and can only be replaced when the user replaces it. First row of cells: 武器，头部，身体，脚部，腰部，护臂
+Second row of cells: 戒指，手部，腿部，项链，护身符，暗器
+Each item can be clicked to bring up a modal displaying the stats that this item provides. 
+
+The bottom navigation bar contains many things, as listed above, and should take up the whole X-axis space. 
+
+With all the navigation bar explained out of the way, the center of the main game home page should display a canvas, which displays the game world. The game world map will have a size limit to it, the user can click anywhere on the game world map part of the screen to move there. The game world map would also display various enemies, allowing the user to click on one and fight them, this is the main part of the game. Fighting enemies drop equippable loot items (as mentioned in bottom navigation bar Area 3), each enemy drops X amount of items after fought, where X is based on X倍 mentioned before. Fighting enemies also provide experience for the user to level up. In this part of the game, enemies do fight back but does 0 damage to the player, this part of the game is only for the user to kill the enemies to gain equippable items, experience and loot. Fighting each enemies consumes 1 bun（包子）, and provides the user 10 xp points. The user starts the game at being level 1, requiring 100 xp to get to level 2, from level 2, it takes 100 + 20 xp to get to level 3, level 3 to level 4 will be 100 + 20 + 20, this logic applies throughout all levels, making each level requiring more and more xp to reach. from level 1 to level 10 the user is 凝气前期, to 突破凝气前期 (level 10) and reach level 11, the user needs to 渡劫. If the user at level 10 and is already at the max xp and is ready to 渡劫 to reach level 11, but continues to fight enemies for xp gains, the xp continues to stack and after a 渡劫, the overflowed xp is passed on and not wasted. level 11 to level 20 will be 凝气中期, 21 to 30 will be 凝气后期, 渡劫突破 from 凝气前期 to 中期, and from 中期 to 后期 and from 后期 to 圆满 are called 小突破, from 凝气圆满 to 筑基前期 is called a 大突破, which makes the subsequent levels requiring an extra 500 xp, so the xp logic becomes 100(base) + N*20 + M*500xp to reach to next level. Below will be a simple experience logic list:
+1级 凝气前期：100xp
+2级 凝气前期：100 + 1*20
+3级 凝气前期：100 + 2*20
+4级 凝气前期：100 + 3*20
+5级 凝气前期：100 + 4*20
+6级 凝气前期：100 + 5*20
+7级 凝气前期：100 + 6*20
+8级 凝气前期：100 + 7*20
+9级 凝气前期：100 + 8*20
+10级 凝气前期：100 + 9*20
+11级 凝气中期期：100 + 10*20
+...
+41级 筑基前期：100 + 40*20 + 1*500
+42级 筑基前期：100 + 41*20 + 1*500
+...
+81级 结丹前期：100 + 80*20 + 2*500
+82级 结丹前期：100 + 81*20 + 2*500
+...
+121级 元婴前期：100 + 120*20 + 3*500
+...
+The whole list of first step cultivation realms is as listed as below:
+凝气 1~40
+筑基 41~80
+结丹 81~120
+元婴 121~160
+化神 161~200
+婴变 201~240
+问鼎 241~280
+阴虚 281~320
+阳实 321~360
+judging by the current calculation steps, if I am not wrong, for level 359 to reach level 360, the math would be:
+100 + 358*20 + 8*500 = 11260xp, which isn't all too bad and seems pretty balanced.
+
+================ TODO: talk about loot drop system logic ===================
+
+In our game, every 1000 buns consumed, gives one charge to 精英怪, with a maximum charge of 3. Users can click on the 精英怪 button in the bottom nav bar, consume 15 buns and summon a 精英怪 to fight, the 精英怪 is the same as other enemies in the main game, they do not do damage back to the user. What is special about this 精英怪
