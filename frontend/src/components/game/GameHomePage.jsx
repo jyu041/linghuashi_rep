@@ -9,7 +9,7 @@ import GameCanvas from "./GameCanvas";
 import Modal from "../common/Modal";
 
 // Import the separated modal components
-import LootModal from "./modals/LootModal";
+import LootModal from "./modals/LootModal.jsx";
 import LootLevelModal from "./modals/LootLevelModal";
 import EquipmentDetailsModal from "./modals/EquipmentDetailsModal";
 import PlaceholderModal from "./modals/PlaceholderModal";
