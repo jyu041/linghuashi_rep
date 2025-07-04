@@ -100,6 +100,18 @@ public class GameController {
         }
     }
 
+    @PostMapping("/upgrade-x-multiplier")
+    public ResponseEntity<GameResponse> upgradeXMultiplier(@RequestHeader("Authorization") String token) {
+        try {
+            String userId = authService.validateTokenAndGetUserId(token);
+            GameResponse response = gameService.upgradeXMultiplier(userId);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest()
+                    .body(new GameResponse(false, e.getMessage(), null));
+        }
+    }
+
     @GetMapping("/user-stats")
     public ResponseEntity<GameResponse> getUserStats(@RequestHeader("Authorization") String token) {
         try {

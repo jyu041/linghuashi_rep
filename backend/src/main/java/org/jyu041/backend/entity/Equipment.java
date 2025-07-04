@@ -29,10 +29,30 @@ public class Equipment {
         this.name = name;
         this.type = type;
         this.tier = tier;
-        this.color = color;
+        this.color = getCorrectTierColor(tier);
         this.level = level;
         this.sellValue = calculateSellValue(tier, level);
         generateRandomStats(tier, level);
+    }
+
+    private String getCorrectTierColor(String tier) {
+        switch (tier) {
+            case "凡品": return "#808080";
+            case "良品": return "#008000";
+            case "上品": return "#008B8B";
+            case "极品": return "#DDA0DD";
+            case "灵品": return "#FFFF00";
+            case "王品": return "#FFA500";
+            case "圣品": return "#FF0000";
+            case "帝品": return "#FFC0CB";
+            case "帝品.精": return "linear-gradient(45deg, #800080, #0000FF)";
+            case "帝品.珍": return "linear-gradient(45deg, #006400, #90EE90)";
+            case "帝品.极": return "linear-gradient(45deg, #00008B, #ADD8E6)";
+            case "帝品.绝": return "linear-gradient(45deg, #4B0082, #DDA0DD)";
+            case "仙品.精": return "linear-gradient(45deg, #B8860B, #FFD700)";
+            case "仙品.极": return "linear-gradient(45deg, #8B0000, #FFB6C1)";
+            default: return "#808080";
+        }
     }
 
     private int calculateSellValue(String tier, int level) {

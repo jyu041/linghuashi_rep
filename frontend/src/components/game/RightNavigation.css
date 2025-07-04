@@ -3,10 +3,10 @@
   position: fixed;
   right: 0;
   top: 80px;
-  bottom: 180px; /* Increased space above bottom nav */
-  width: 80px; /* Reduced width for less gap */
-  background: rgba(0, 0, 0, 0.1);
-  backdrop-filter: blur(5px);
+  bottom: 180px;
+  width: 80px;
+  background: rgba(0, 0, 0, 0.05);
+  backdrop-filter: blur(3px);
   padding: 20px 10px;
   display: flex;
   flex-direction: column;

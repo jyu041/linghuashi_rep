@@ -3,79 +3,135 @@
   width: 100%;
 }
 
+.loot-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.loot-header h3 {
+  margin: 0;
+  color: #ffd700;
+  font-size: 1.2rem;
+}
+
+.sell-all-btn {
+  background: linear-gradient(45deg, #ff6b6b, #ff8e53);
+  border: none;
+  border-radius: 8px;
+  padding: 8px 16px;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.sell-all-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 15px rgba(255, 107, 107, 0.4);
+}
+
 .loot-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
   gap: 15px;
   max-height: 60vh;
   overflow-y: auto;
   padding-right: 10px;
 }
 
-.loot-item {
+.loot-item-card {
   background: rgba(255, 255, 255, 0.1);
-  border: 2px solid;
+  border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 12px;
-  padding: 15px;
+  padding: 12px;
+  cursor: pointer;
   transition: all 0.3s ease;
-}
-
-.loot-item:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
-}
-
-.item-name {
-  font-weight: bold;
-  margin-bottom: 10px;
-  text-align: center;
-  font-size: 1rem;
-}
-
-.item-stats {
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  margin-bottom: 15px;
-  font-size: 0.9rem;
-}
-
-.item-stats div {
-  display: flex;
-  justify-content: space-between;
-  padding: 2px 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.item-actions {
-  display: flex;
+  align-items: center;
   gap: 8px;
 }
 
-.equip-btn, .sell-btn {
-  flex: 1;
-  padding: 8px;
-  border: none;
-  border-radius: 6px;
+.loot-item-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.item-icon-container {
+  position: relative;
+  width: 60px;
+  height: 60px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.item-icon {
+  font-size: 2rem;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5));
+}
+
+.upgrade-indicator {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background: rgba(76, 175, 80, 0.9);
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  border: 2px solid white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.item-info {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.item-name {
+  color: white;
   font-weight: bold;
-  cursor: pointer;
-  transition: all 0.3s ease;
+  font-size: 0.8rem;
+  line-height: 1.2;
+  max-width: 100px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.item-level {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.7rem;
+}
+
+.item-power {
+  color: #4CAF50;
+  font-weight: bold;
   font-size: 0.8rem;
 }
 
-.equip-btn {
-  background: linear-gradient(45deg, #4CAF50, #8BC34A);
-  color: white;
+.no-items {
+  text-align: center;
+  padding: 40px;
+  color: rgba(255, 255, 255, 0.6);
 }
 
-.sell-btn {
-  background: linear-gradient(45deg, #ff6b6b, #ff8e53);
-  color: white;
-}
-
-.equip-btn:hover, .sell-btn:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+.no-items p {
+  margin: 0;
+  font-size: 1.1rem;
 }
 
 /* Scrollbar Styling for Loot Grid */
@@ -99,25 +155,32 @@
 
 @media (max-width: 768px) {
   .loot-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
     gap: 10px;
     max-height: 50vh;
   }
   
-  .loot-item {
-    padding: 12px;
+  .loot-item-card {
+    padding: 8px;
+  }
+  
+  .item-icon-container {
+    width: 50px;
+    height: 50px;
+  }
+  
+  .item-icon {
+    font-size: 1.5rem;
   }
   
   .item-name {
-    font-size: 0.9rem;
-  }
-  
-  .item-stats {
-    font-size: 0.8rem;
-  }
-  
-  .equip-btn, .sell-btn {
     font-size: 0.7rem;
-    padding: 6px;
+    max-width: 80px;
+  }
+  
+  .upgrade-indicator {
+    width: 20px;
+    height: 20px;
+    font-size: 0.8rem;
   }
 }

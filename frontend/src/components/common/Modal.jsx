@@ -8,7 +8,7 @@ function Modal({
   children,
   size = "medium",
   className = "",
-  isCanvasModal = false, // New prop for canvas overlay modals
+  isCanvasModal = false,
 }) {
   if (!isOpen) return null;
 
@@ -44,9 +44,6 @@ function Modal({
         {title && (
           <div className="modal-header">
             <h3 className="modal-title">{title}</h3>
-            <button className="modal-close-btn" onClick={onClose}>
-              ×
-            </button>
           </div>
         )}
         <div className="modal-body">{children}</div>

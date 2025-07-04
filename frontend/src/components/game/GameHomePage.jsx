@@ -12,6 +12,7 @@ import Modal from "../common/Modal";
 import LootModal from "./modals/LootModal.jsx";
 import LootLevelModal from "./modals/LootLevelModal";
 import EquipmentDetailsModal from "./modals/EquipmentDetailsModal";
+import ItemCompareModal from "./modals/ItemCompareModal";
 import PlaceholderModal from "./modals/PlaceholderModal";
 
 function GameHomePage({ user, token, onLogout }) {
@@ -72,8 +73,7 @@ function GameHomePage({ user, token, onLogout }) {
       const data = await response.json();
       if (data.success) {
         setGameUser(data.user);
-        setSelectedItems(data.droppedItems);
-        setShowModal("loot");
+        handleLootDrops(data.droppedItems);
       } else {
         alert(data.message);
       }
@@ -82,6 +82,38 @@ function GameHomePage({ user, token, onLogout }) {
       alert("战斗失败，请重试");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleLootDrops = (droppedItems) => {
+    // Auto-equip items for empty slots
+    const autoEquippedItems = [];
+    const remainingItems = [];
+
+    droppedItems.forEach((item) => {
+      const currentItem = gameUser.equippedItems?.[item.type];
+      if (!currentItem) {
+        // Auto-equip to empty slot
+        autoEquippedItems.push(item);
+        handleEquipItem(item);
+      } else {
+        remainingItems.push(item);
+      }
+    });
+
+    // Show remaining items for comparison/decision
+    if (remainingItems.length > 0) {
+      if (remainingItems.length === 1) {
+        // Single item comparison
+        const item = remainingItems[0];
+        const currentItem = gameUser.equippedItems[item.type];
+        setModalData({ newItem: item, currentItem });
+        setShowModal("itemCompare");
+      } else {
+        // Multiple items modal
+        setSelectedItems(remainingItems);
+        setShowModal("loot");
+      }
     }
   };
 
@@ -111,8 +143,7 @@ function GameHomePage({ user, token, onLogout }) {
       const data = await response.json();
       if (data.success) {
         setGameUser(data.user);
-        setSelectedItems(data.droppedItems);
-        setShowModal("loot");
+        handleLootDrops(data.droppedItems);
       } else {
         alert(data.message);
       }
@@ -142,6 +173,10 @@ function GameHomePage({ user, token, onLogout }) {
       if (data.success) {
         setGameUser(data.user);
         setSelectedItems((prev) => prev.filter((i) => i.id !== item.id));
+        // Close modal if no more items
+        if (selectedItems.length <= 1) {
+          closeModal();
+        }
       } else {
         alert(data.message);
       }
@@ -167,12 +202,28 @@ function GameHomePage({ user, token, onLogout }) {
       if (data.success) {
         setGameUser(data.user);
         setSelectedItems((prev) => prev.filter((i) => i.id !== item.id));
+        // Close modal if no more items
+        if (selectedItems.length <= 1) {
+          closeModal();
+        }
       } else {
         alert(data.message);
       }
     } catch (error) {
       console.error("Sell failed:", error);
       alert("出售失败，请重试");
+    }
+  };
+
+  const handleSellAllItems = async () => {
+    try {
+      for (const item of selectedItems) {
+        await handleSellItem(item);
+      }
+      closeModal();
+    } catch (error) {
+      console.error("Sell all failed:", error);
+      alert("批量出售失败，请重试");
     }
   };
 
@@ -202,6 +253,32 @@ function GameHomePage({ user, token, onLogout }) {
     }
   };
 
+  const handleUpgradeXMultiplier = async () => {
+    try {
+      const response = await fetch(
+        "http://localhost:8080/api/game/upgrade-x-multiplier",
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      const data = await response.json();
+      if (data.success) {
+        alert(data.message);
+        updateUserData();
+        closeModal();
+      } else {
+        alert(data.message);
+      }
+    } catch (error) {
+      console.error("X Multiplier upgrade failed:", error);
+      alert("倍数升级失败，请重试");
+    }
+  };
+
   const handleModalOpen = (modalType, data = null) => {
     setShowModal(modalType);
     setModalData(data);
@@ -219,8 +296,10 @@ function GameHomePage({ user, token, onLogout }) {
         return (
           <LootModal
             selectedItems={selectedItems}
+            user={gameUser}
             onEquipItem={handleEquipItem}
             onSellItem={handleSellItem}
+            onSellAll={handleSellAllItems}
           />
         );
       case "lootLevelUpgrade":
@@ -228,7 +307,23 @@ function GameHomePage({ user, token, onLogout }) {
           <LootLevelModal
             user={gameUser}
             onUpgrade={handleUpgradeLootLevel}
+            onUpgradeXMultiplier={handleUpgradeXMultiplier}
             onClose={closeModal}
+          />
+        );
+      case "itemCompare":
+        return (
+          <ItemCompareModal
+            newItem={modalData?.newItem}
+            currentItem={modalData?.currentItem}
+            onEquip={() => {
+              handleEquipItem(modalData.newItem);
+              closeModal();
+            }}
+            onSell={() => {
+              handleSellItem(modalData.newItem);
+              closeModal();
+            }}
           />
         );
       case "equipmentDetails":
@@ -254,7 +349,9 @@ function GameHomePage({ user, token, onLogout }) {
       case "loot":
         return "战利品";
       case "lootLevelUpgrade":
-        return "掉落等级升级";
+        return "升级系统";
+      case "itemCompare":
+        return "装备对比";
       case "equipmentDetails":
         return modalData?.name || "装备详情";
       default:
@@ -268,6 +365,8 @@ function GameHomePage({ user, token, onLogout }) {
         return "extra-large";
       case "lootLevelUpgrade":
         return "large";
+      case "itemCompare":
+        return "large";
       case "equipmentDetails":
         return "small";
       case "福利":
@@ -280,7 +379,9 @@ function GameHomePage({ user, token, onLogout }) {
   };
 
   const isCanvasModal = () => {
-    return ["lootLevelUpgrade", "equipmentDetails"].includes(showModal);
+    return ["lootLevelUpgrade", "equipmentDetails", "itemCompare"].includes(
+      showModal
+    );
   };
 
   return (

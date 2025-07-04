@@ -180,6 +180,29 @@ public class GameService {
         return new GameResponse(true, "Loot level upgraded to " + user.getLootDropLevel(), user);
     }
 
+    public GameResponse upgradeXMultiplier(String userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        // Check requirements
+        int requiredLootLevel = calculateRequiredLootLevelForXMultiplier(user.getXMultiplier());
+        if (user.getLootDropLevel() < requiredLootLevel) {
+            throw new RuntimeException("Loot level " + requiredLootLevel + " required to upgrade X multiplier");
+        }
+
+        long cost = calculateXMultiplierUpgradeCost(user.getXMultiplier());
+        if (user.getGoldCoins() < cost) {
+            throw new RuntimeException("Not enough gold coins");
+        }
+
+        user.setGoldCoins(user.getGoldCoins() - cost);
+        user.setXMultiplier(user.getXMultiplier() + 1);
+
+        userRepository.save(user);
+
+        return new GameResponse(true, "X Multiplier upgraded to " + user.getXMultiplier(), user);
+    }
+
     public GameResponse getUserStats(String userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
@@ -220,5 +243,14 @@ public class GameService {
 
     private long calculateLootLevelUpgradeCost(int currentLevel) {
         return (long) (1000 * Math.pow(1.5, currentLevel - 1));
+    }
+
+    private long calculateXMultiplierUpgradeCost(int currentMultiplier) {
+        return (long) (100 * Math.pow(2, currentMultiplier - 1));
+    }
+
+    private int calculateRequiredLootLevelForXMultiplier(int currentMultiplier) {
+        // X2 requires loot level 5, X3 requires level 10, X4 requires level 15, etc.
+        return Math.max(1, (currentMultiplier - 1) * 5);
     }
 }

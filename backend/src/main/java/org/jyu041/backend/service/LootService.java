@@ -92,8 +92,8 @@ public class LootService {
         return "凡品"; // Fallback
     }
 
-    private Map<String, Double> calculateDropRates(int level) {
-        Map<String, Double> rates = new HashMap<>();
+    public Map<String, Double> calculateDropRates(int level) {
+        Map<String, Double> rates = new LinkedHashMap<>();
 
         if (level == 1) {
             rates.put("凡品", 69.0);
@@ -106,46 +106,69 @@ public class LootService {
             rates.put("上品", 18.0);
             rates.put("极品", 2.81);
             rates.put("灵品", 0.2);
-        } else if (level >= 13) {
-            if (level == 13) {
-                rates.put("灵品", 53.39);
-                rates.put("王品", 30.10);
-                rates.put("圣品", 9.22);
-                rates.put("帝品", 4.61);
-                rates.put("帝品.精", 2.00);
-                rates.put("帝品.珍", 0.59);
-                rates.put("帝品.极", 0.08);
-                rates.put("帝品.绝", 0.01);
-            } else if (level == 14) {
-                rates.put("王品", 53.40);
-                rates.put("圣品", 29.65);
-                rates.put("帝品", 9.44);
-                rates.put("帝品.精", 4.98);
-                rates.put("帝品.珍", 1.86);
-                rates.put("帝品.极", 0.58);
-                rates.put("帝品.绝", 0.08);
-                rates.put("仙品.精", 0.01);
-            } else if (level >= 15) {
-                // Higher levels get even better rates
-                rates.put("圣品", 40.0);
-                rates.put("帝品", 25.0);
-                rates.put("帝品.精", 15.0);
-                rates.put("帝品.珍", 10.0);
-                rates.put("帝品.极", 7.0);
-                rates.put("帝品.绝", 2.5);
-                rates.put("仙品.精", 0.4);
-                rates.put("仙品.极", 0.1);
+        } else if (level <= 12) {
+            // Progressive scaling from level 3 to 12
+            double factor = (level - 2.0) / 10.0; // 0.1 to 1.0
+            rates.put("凡品", Math.max(0, 53.99 * (1 - factor)));
+            rates.put("良品", Math.max(0, 25.0 - factor * 15));
+            rates.put("上品", Math.max(0, 18.0 - factor * 8));
+            rates.put("极品", 2.81 + factor * 5);
+            rates.put("灵品", 0.2 + factor * 25);
+            if (factor > 0.3) {
+                rates.put("王品", (factor - 0.3) * 35);
             }
-        } else {
-            // Interpolate between level 2 and level 13
-            double factor = (level - 2.0) / 11.0; // 0 to 1
-            rates.put("凡品", 53.99 * (1 - factor));
-            rates.put("良品", 25.0 + factor * 5);
-            rates.put("上品", 18.0 + factor * 10);
-            rates.put("极品", 2.81 + factor * 15);
-            rates.put("灵品", 0.2 + factor * 53.19);
-            if (factor > 0.5) {
-                rates.put("王品", (factor - 0.5) * 60);
+            if (factor > 0.6) {
+                rates.put("圣品", (factor - 0.6) * 15);
+            }
+            if (factor > 0.8) {
+                rates.put("帝品", (factor - 0.8) * 10);
+            }
+        } else if (level == 13) {
+            rates.put("灵品", 53.39);
+            rates.put("王品", 30.10);
+            rates.put("圣品", 9.22);
+            rates.put("帝品", 4.61);
+            rates.put("帝品.精", 2.00);
+            rates.put("帝品.珍", 0.59);
+            rates.put("帝品.极", 0.08);
+            rates.put("帝品.绝", 0.01);
+        } else if (level == 14) {
+            rates.put("王品", 53.40);
+            rates.put("圣品", 29.65);
+            rates.put("帝品", 9.44);
+            rates.put("帝品.精", 4.98);
+            rates.put("帝品.珍", 1.86);
+            rates.put("帝品.极", 0.58);
+            rates.put("帝品.绝", 0.08);
+            rates.put("仙品.精", 0.01);
+        } else if (level >= 15) {
+            // Infinite scaling system for levels 15+
+            double baseShift = (level - 14) * 0.1; // Each level shifts rates
+            double rareTierBoost = Math.log(level - 13) * 0.5; // Logarithmic boost for rare tiers
+
+            if (level < 20) {
+                rates.put("王品", Math.max(0, 53.40 - baseShift * 100));
+                rates.put("圣品", 29.65 + baseShift * 50);
+                rates.put("帝品", 9.44 + baseShift * 30);
+                rates.put("帝品.精", 4.98 + baseShift * 15);
+                rates.put("帝品.珍", 1.86 + baseShift * 8);
+                rates.put("帝品.极", 0.58 + baseShift * 4);
+                rates.put("帝品.绝", 0.08 + baseShift * 2);
+                rates.put("仙品.精", 0.01 + baseShift * 1);
+                if (level >= 18) {
+                    rates.put("仙品.极", (level - 17) * 0.01);
+                }
+            } else {
+                // Advanced infinite scaling for level 20+
+                double advancedFactor = Math.pow(1.02, level - 20); // Exponential growth
+                rates.put("圣品", Math.max(5, 40 - baseShift * 20));
+                rates.put("帝品", Math.max(10, 25 + rareTierBoost * 5));
+                rates.put("帝品.精", Math.max(8, 15 + rareTierBoost * 3));
+                rates.put("帝品.珍", Math.max(6, 10 + rareTierBoost * 2));
+                rates.put("帝品.极", Math.max(4, 7 + rareTierBoost * 1.5));
+                rates.put("帝品.绝", Math.max(2, 2.5 + rareTierBoost));
+                rates.put("仙品.精", Math.max(1, 0.4 + rareTierBoost * 0.5));
+                rates.put("仙品.极", Math.max(0.1, 0.1 + (level - 20) * 0.05 * advancedFactor));
             }
         }
 

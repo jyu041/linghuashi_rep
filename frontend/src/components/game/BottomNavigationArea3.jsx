@@ -22,6 +22,26 @@ function BottomNavigationArea3({ user, onEquipmentClick }) {
     return user.equippedItems?.[slotKey];
   };
 
+  const getTierColor = (tier) => {
+    const colors = {
+      凡品: "#808080",
+      良品: "#008000",
+      上品: "#008B8B",
+      极品: "#DDA0DD",
+      灵品: "#FFFF00",
+      王品: "#FFA500",
+      圣品: "#FF0000",
+      帝品: "#FFC0CB",
+      "帝品.精": "#800080",
+      "帝品.珍": "#006400",
+      "帝品.极": "#00008B",
+      "帝品.绝": "#4B0082",
+      "仙品.精": "#B8860B",
+      "仙品.极": "#8B0000",
+    };
+    return colors[tier] || "#808080";
+  };
+
   return (
     <div className="nav-area area-3">
       <div className="equipment-grid">
@@ -39,15 +59,13 @@ function BottomNavigationArea3({ user, onEquipmentClick }) {
               {equippedItem ? (
                 <div
                   className="equipped-item"
-                  style={{ borderColor: equippedItem.color }}
+                  style={{
+                    backgroundColor: getTierColor(equippedItem.tier),
+                    borderColor: getTierColor(equippedItem.tier),
+                  }}
                 >
                   <div className="item-icon">{slot.icon}</div>
-                  <div
-                    className="item-tier"
-                    style={{ color: equippedItem.color }}
-                  >
-                    {equippedItem.tier}
-                  </div>
+                  <div className="item-tier">{equippedItem.tier}</div>
                 </div>
               ) : (
                 <div className="empty-slot">

@@ -1,26 +1,26 @@
 /* src/components/common/Modal.css */
 .modal-overlay {
   position: fixed;
-  top: 80px; /* Below top navigation */
-  left: 80px; /* After left navigation - reduced gap */
-  right: 80px; /* Before right navigation - reduced gap */
-  bottom: 180px; /* Above bottom navigation - more space */
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   background: rgba(0, 0, 0, 0.8);
   backdrop-filter: blur(10px);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 200; /* Above game canvas and navigation */
+  z-index: 200;
   animation: fadeIn 0.3s ease-out;
 }
 
 /* Canvas overlay modal - appears directly over game canvas */
 .modal-overlay.canvas-modal {
   top: 80px;
-  left: 150px;
-  right: 150px;
-  bottom: 160px;
-  z-index: 300; /* Higher than normal modals */
+  left: 0;
+  right: 0;
+  bottom: 180px;
+  z-index: 300;
 }
 
 @keyframes fadeIn {
@@ -79,7 +79,7 @@
 
 .modal-header {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
   margin-bottom: 20px;
   padding-bottom: 15px;
@@ -93,27 +93,7 @@
   background: linear-gradient(45deg, #ffd700, #ff6b6b);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-}
-
-.modal-close-btn {
-  background: rgba(255, 0, 0, 0.3);
-  border: 1px solid rgba(255, 0, 0, 0.5);
-  border-radius: 50%;
-  width: 30px;
-  height: 30px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  cursor: pointer;
-  font-size: 1.2rem;
-  font-weight: bold;
-  transition: all 0.3s ease;
-}
-
-.modal-close-btn:hover {
-  background: rgba(255, 0, 0, 0.5);
-  transform: scale(1.1);
+  text-align: center;
 }
 
 .modal-body {
@@ -145,8 +125,8 @@
   .modal-overlay,
   .modal-overlay.canvas-modal {
     top: 80px;
-    left: 80px;
-    right: 80px;
+    left: 0;
+    right: 0;
     bottom: 140px;
   }
   
@@ -191,11 +171,5 @@
   
   .modal-title {
     font-size: 1.1rem;
-  }
-  
-  .modal-close-btn {
-    width: 25px;
-    height: 25px;
-    font-size: 1rem;
   }
 }
