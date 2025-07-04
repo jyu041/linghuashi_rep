@@ -1,0 +1,123 @@
+/* src/components/game/modals/LootLevelModal.css */
+.loot-level-content {
+  width: 100%;
+}
+
+.current-level-section, .next-level-section {
+  margin-bottom: 20px;
+  padding: 15px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+}
+
+.current-level-section h4 {
+  color: #ffd700;
+  margin-bottom: 10px;
+  font-size: 1rem;
+}
+
+.next-level-section h4 {
+  color: #4CAF50;
+  margin-bottom: 10px;
+  font-size: 1rem;
+}
+
+.drop-rates {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 8px;
+}
+
+.rate-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 10px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 6px;
+  position: relative;
+}
+
+.tier-name {
+  font-weight: bold;
+  font-size: 0.9rem;
+}
+
+.rate-value {
+  color: white;
+  font-weight: bold;
+  font-size: 0.8rem;
+}
+
+.new-tier {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: #4CAF50;
+  color: white;
+  font-size: 0.6rem;
+  padding: 2px 4px;
+  border-radius: 4px;
+  font-weight: bold;
+}
+
+.upgrade-cost {
+  text-align: center;
+  margin-bottom: 20px;
+  padding: 10px;
+  background: rgba(255, 215, 0, 0.1);
+  border: 1px solid rgba(255, 215, 0, 0.3);
+  border-radius: 8px;
+}
+
+.upgrade-cost p {
+  margin: 4px 0;
+  font-weight: bold;
+}
+
+.modal-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.upgrade-btn, .cancel-btn {
+  flex: 1;
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.upgrade-btn {
+  background: linear-gradient(45deg, #4CAF50, #8BC34A);
+  color: white;
+}
+
+.upgrade-btn:disabled {
+  background: rgba(100, 100, 100, 0.5);
+  cursor: not-allowed;
+}
+
+.cancel-btn {
+  background: rgba(255, 0, 0, 0.3);
+  border: 1px solid rgba(255, 0, 0, 0.5);
+  color: white;
+}
+
+.upgrade-btn:hover:not(:disabled), .cancel-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+@media (max-width: 768px) {
+  .drop-rates {
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: 6px;
+  }
+  
+  .modal-buttons {
+    flex-direction: column;
+  }
+}

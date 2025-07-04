@@ -2,9 +2,9 @@
 .modal-overlay {
   position: fixed;
   top: 80px; /* Below top navigation */
-  left: 150px; /* After left navigation */
-  right: 150px; /* Before right navigation */
-  bottom: 160px; /* Above bottom navigation */
+  left: 80px; /* After left navigation - reduced gap */
+  right: 80px; /* Before right navigation - reduced gap */
+  bottom: 180px; /* Above bottom navigation - more space */
   background: rgba(0, 0, 0, 0.8);
   backdrop-filter: blur(10px);
   display: flex;

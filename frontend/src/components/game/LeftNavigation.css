@@ -3,8 +3,8 @@
   position: fixed;
   left: 0;
   top: 80px;
-  bottom: 160px; /* Changed from 200px to 160px to avoid overlap */
-  width: 150px;
+  bottom: 180px; /* Increased space above bottom nav */
+  width: 80px; /* Reduced width for less gap */
   background: rgba(0, 0, 0, 0.1);
   backdrop-filter: blur(5px);
   padding: 20px 10px;

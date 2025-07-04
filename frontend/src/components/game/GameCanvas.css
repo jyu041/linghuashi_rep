@@ -2,9 +2,9 @@
 .game-canvas-container {
   position: fixed;
   top: 80px;
-  left: 150px;
-  right: 150px;
-  bottom: 160px; /* Changed from 200px to 160px */
+  left: 80px; /* Reduced gap from left navigation */
+  right: 80px; /* Reduced gap from right navigation */
+  bottom: 180px; /* More space above bottom navigation */
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -19,9 +19,12 @@
   border-radius: 10px;
   cursor: crosshair;
   max-width: 100%;
-  max-height: calc(100% - 80px);
+  max-height: 100%;
+  width: 100%;
+  height: 100%;
   object-fit: contain;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  background: #2c3e50;
 }
 
 .game-canvas:hover {
@@ -101,52 +104,11 @@
   white-space: nowrap;
 }
 
-/* Mini-map */
-.mini-map {
-  position: absolute;
-  top: 15px;
-  right: 15px;
-  width: 150px;
-  height: 100px;
-  background: rgba(0, 0, 0, 0.8);
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  border-radius: 8px;
-  overflow: hidden;
-  z-index: 55;
-}
-
-.mini-map-content {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  background: rgba(44, 62, 80, 0.8);
-}
-
-.mini-map-player {
-  position: absolute;
-  width: 6px;
-  height: 6px;
-  background: #ffd700;
-  border: 1px solid #ff6b6b;
-  border-radius: 50%;
-  transform: translate(-50%, -50%);
-  z-index: 3;
-}
-
-.mini-map-viewport {
-  position: absolute;
-  border: 1px solid rgba(255, 255, 255, 0.6);
-  background: rgba(255, 255, 255, 0.1);
-  transform: translate(0, 0);
-  pointer-events: none;
-  z-index: 2;
-}
-
 @media (max-width: 768px) {
   .game-canvas-container {
-    left: 80px;
-    right: 80px;
-    bottom: 140px; /* Adjusted for mobile */
+    left: 10px; /* Even less gap on mobile */
+    right: 10px; /* Even less gap on mobile */
+    bottom: 160px; /* Adjusted for mobile bottom nav */
   }
   
   .canvas-controls {
@@ -176,17 +138,5 @@
   
   .canvas-loading {
     padding: 20px;
-  }
-  
-  .mini-map {
-    width: 120px;
-    height: 80px;
-    top: 10px;
-    right: 10px;
-  }
-  
-  .mini-map-player {
-    width: 4px;
-    height: 4px;
   }
 }
