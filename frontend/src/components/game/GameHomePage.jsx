@@ -6,6 +6,7 @@ import LeftNavigation from "./LeftNavigation";
 import RightNavigation from "./RightNavigation";
 import BottomNavigation from "./BottomNavigation";
 import GameCanvas from "./GameCanvas";
+import Modal from "../common/Modal";
 
 function GameHomePage({ user, token, onLogout }) {
   const [gameUser, setGameUser] = useState(user);
@@ -173,6 +174,113 @@ function GameHomePage({ user, token, onLogout }) {
     setSelectedItems([]);
   };
 
+  const renderLootModal = () => (
+    <div className="loot-content">
+      <div className="loot-grid">
+        {selectedItems.map((item, index) => (
+          <div
+            key={index}
+            className="loot-item"
+            style={{ borderColor: item.color }}
+          >
+            <div className="item-name" style={{ color: item.color }}>
+              {item.name}
+            </div>
+            <div className="item-stats">
+              <div>等级: {item.level}</div>
+              <div>攻击: +{item.attackBonus}</div>
+              <div>防御: +{item.defenseBonus}</div>
+              <div>生命: +{item.healthBonus}</div>
+              <div>速度: +{item.speedBonus}</div>
+            </div>
+            <div className="item-actions">
+              <button
+                className="equip-btn"
+                onClick={() => handleEquipItem(item)}
+              >
+                装备
+              </button>
+              <button className="sell-btn" onClick={() => handleSellItem(item)}>
+                出售 ({item.sellValue}银币)
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+
+  const renderModalContent = () => {
+    switch (showModal) {
+      case "loot":
+        return renderLootModal();
+      case "掌天瓶":
+        return <div className="placeholder-content">掌天瓶功能开发中...</div>;
+      case "星海壶":
+        return <div className="placeholder-content">星海壶功能开发中...</div>;
+      case "福利":
+        return <div className="placeholder-content">福利系统开发中...</div>;
+      case "超值豪礼":
+        return <div className="placeholder-content">超值豪礼开发中...</div>;
+      case "活动":
+        return <div className="placeholder-content">活动系统开发中...</div>;
+      case "限时礼包":
+        return <div className="placeholder-content">限时礼包开发中...</div>;
+      case "新手礼包":
+        return <div className="placeholder-content">新手礼包开发中...</div>;
+      case "每日任务":
+        return <div className="placeholder-content">每日任务系统开发中...</div>;
+      case "市场":
+        return <div className="placeholder-content">市场系统开发中...</div>;
+      case "仙途":
+        return <div className="placeholder-content">仙途系统开发中...</div>;
+      default:
+        return <div className="placeholder-content">功能开发中...</div>;
+    }
+  };
+
+  const getModalTitle = () => {
+    switch (showModal) {
+      case "loot":
+        return "战利品";
+      case "掌天瓶":
+        return "掌天瓶";
+      case "星海壶":
+        return "星海壶";
+      case "福利":
+        return "福利";
+      case "超值豪礼":
+        return "超值豪礼";
+      case "活动":
+        return "活动";
+      case "限时礼包":
+        return "限时礼包";
+      case "新手礼包":
+        return "新手礼包";
+      case "每日任务":
+        return "每日任务";
+      case "市场":
+        return "市场";
+      case "仙途":
+        return "仙途";
+      default:
+        return "功能";
+    }
+  };
+
+  const getModalSize = () => {
+    switch (showModal) {
+      case "loot":
+        return "extra-large";
+      case "福利":
+      case "超值豪礼":
+      case "活动":
+        return "large";
+      default:
+        return "medium";
+    }
+  };
+
   return (
     <div className="game-home-container">
       {loading && (
@@ -207,53 +315,16 @@ function GameHomePage({ user, token, onLogout }) {
         onUserUpdate={updateUserData}
       />
 
-      {/* Loot Modal */}
-      {showModal === "loot" && selectedItems.length > 0 && (
-        <div className="modal-overlay" onClick={closeModal}>
-          <div className="loot-modal" onClick={(e) => e.stopPropagation()}>
-            <h3>战利品</h3>
-            <div className="loot-grid">
-              {selectedItems.map((item, index) => (
-                <div
-                  key={index}
-                  className="loot-item"
-                  style={{ borderColor: item.color }}
-                >
-                  <div className="item-name" style={{ color: item.color }}>
-                    {item.name}
-                  </div>
-                  <div className="item-stats">
-                    <div>等级: {item.level}</div>
-                    <div>攻击: +{item.attackBonus}</div>
-                    <div>防御: +{item.defenseBonus}</div>
-                    <div>生命: +{item.healthBonus}</div>
-                    <div>速度: +{item.speedBonus}</div>
-                  </div>
-                  <div className="item-actions">
-                    <button
-                      className="equip-btn"
-                      onClick={() => handleEquipItem(item)}
-                    >
-                      装备
-                    </button>
-                    <button
-                      className="sell-btn"
-                      onClick={() => handleSellItem(item)}
-                    >
-                      出售 ({item.sellValue}银币)
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-            <button className="close-modal-btn" onClick={closeModal}>
-              关闭
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* Other Modals can be added here based on showModal state */}
+      {/* Shared Modal Component */}
+      <Modal
+        isOpen={!!showModal}
+        onClose={closeModal}
+        title={getModalTitle()}
+        size={getModalSize()}
+        className={showModal === "loot" ? "loot-modal-custom" : ""}
+      >
+        {renderModalContent()}
+      </Modal>
     </div>
   );
 }

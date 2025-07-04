@@ -13,13 +13,13 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.8);
+  background: rgba(0, 0, 0, 0.9);
   backdrop-filter: blur(5px);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  z-index: 9999;
+  z-index: 10000; /* Above everything including modals */
   color: white;
 }
 
@@ -38,34 +38,16 @@
   100% { transform: rotate(360deg); }
 }
 
-.loot-modal {
-  background: rgba(20, 20, 30, 0.95);
-  backdrop-filter: blur(15px);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  border-radius: 20px;
-  padding: 25px;
-  max-width: 800px;
-  max-height: 80vh;
-  width: 90%;
-  color: white;
-  overflow-y: auto;
-}
-
-.loot-modal h3 {
-  text-align: center;
-  margin-bottom: 20px;
-  font-size: 1.5rem;
-  background: linear-gradient(45deg, #ffd700, #ff6b6b);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+/* Loot Modal Specific Content Styles */
+.loot-content {
+  width: 100%;
 }
 
 .loot-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 15px;
-  margin-bottom: 20px;
-  max-height: 400px;
+  max-height: 60vh;
   overflow-y: auto;
   padding-right: 10px;
 }
@@ -136,25 +118,24 @@
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
 }
 
-.close-modal-btn {
-  width: 100%;
-  background: linear-gradient(45deg, #ffd700, #ff6b6b);
-  border: none;
+/* Placeholder Content for Feature Modals */
+.placeholder-content {
+  text-align: center;
+  padding: 40px 20px;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 1.1rem;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 10px;
-  padding: 12px;
-  color: white;
-  font-weight: bold;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: all 0.3s ease;
+  margin: 20px 0;
 }
 
-.close-modal-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(255, 215, 0, 0.4);
+/* Custom styling for loot modal */
+.loot-modal-custom .modal-body {
+  max-height: 70vh;
 }
 
-/* Scrollbar Styling */
+/* Scrollbar Styling for Loot Grid */
 .loot-grid::-webkit-scrollbar {
   width: 8px;
 }
@@ -174,15 +155,10 @@
 }
 
 @media (max-width: 768px) {
-  .loot-modal {
-    padding: 20px;
-    width: 95%;
-    max-height: 90vh;
-  }
-  
   .loot-grid {
     grid-template-columns: 1fr;
     gap: 10px;
+    max-height: 50vh;
   }
   
   .loot-item {
@@ -200,5 +176,10 @@
   .equip-btn, .sell-btn {
     font-size: 0.7rem;
     padding: 6px;
+  }
+  
+  .placeholder-content {
+    padding: 30px 15px;
+    font-size: 1rem;
   }
 }

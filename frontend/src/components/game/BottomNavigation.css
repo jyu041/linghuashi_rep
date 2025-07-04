@@ -368,42 +368,127 @@
   opacity: 0.6;
 }
 
-/* Modal Styles */
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.7);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
+/* Modal Content Styles for BottomNavigation modals */
+.loot-level-content {
+  width: 100%;
 }
 
-.equipment-modal {
-  background: rgba(20, 20, 30, 0.95);
-  backdrop-filter: blur(15px);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  border-radius: 15px;
-  padding: 20px;
-  max-width: 300px;
-  width: 90%;
+.current-level-section, .next-level-section {
+  margin-bottom: 20px;
+  padding: 15px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+}
+
+.current-level-section h4 {
+  color: #ffd700;
+  margin-bottom: 10px;
+  font-size: 1rem;
+}
+
+.next-level-section h4 {
+  color: #4CAF50;
+  margin-bottom: 10px;
+  font-size: 1rem;
+}
+
+.drop-rates {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 8px;
+}
+
+.rate-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 10px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 6px;
+  position: relative;
+}
+
+.tier-name {
+  font-weight: bold;
+  font-size: 0.9rem;
+}
+
+.rate-value {
+  color: white;
+  font-weight: bold;
+  font-size: 0.8rem;
+}
+
+.new-tier {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: #4CAF50;
+  color: white;
+  font-size: 0.6rem;
+  padding: 2px 4px;
+  border-radius: 4px;
+  font-weight: bold;
+}
+
+.upgrade-cost {
+  text-align: center;
+  margin-bottom: 20px;
+  padding: 10px;
+  background: rgba(255, 215, 0, 0.1);
+  border: 1px solid rgba(255, 215, 0, 0.3);
+  border-radius: 8px;
+}
+
+.upgrade-cost p {
+  margin: 4px 0;
+  font-weight: bold;
+}
+
+.modal-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.upgrade-btn, .cancel-btn {
+  flex: 1;
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.upgrade-btn {
+  background: linear-gradient(45deg, #4CAF50, #8BC34A);
   color: white;
 }
 
-.equipment-modal h3 {
-  text-align: center;
-  margin-bottom: 15px;
-  font-size: 1.2rem;
+.upgrade-btn:disabled {
+  background: rgba(100, 100, 100, 0.5);
+  cursor: not-allowed;
+}
+
+.cancel-btn {
+  background: rgba(255, 0, 0, 0.3);
+  border: 1px solid rgba(255, 0, 0, 0.5);
+  color: white;
+}
+
+.upgrade-btn:hover:not(:disabled), .cancel-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.equipment-details {
+  width: 100%;
 }
 
 .equipment-stats {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  margin-bottom: 15px;
 }
 
 .equipment-stats div {
@@ -411,23 +496,6 @@
   justify-content: space-between;
   padding: 4px 0;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.equipment-modal button {
-  width: 100%;
-  background: linear-gradient(45deg, #ffd700, #ff6b6b);
-  border: none;
-  border-radius: 8px;
-  padding: 10px;
-  color: white;
-  font-weight: bold;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.equipment-modal button:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);
 }
 
 @media (max-width: 768px) {
@@ -456,5 +524,14 @@
   
   .progress-bar {
     width: 120px;
+  }
+  
+  .drop-rates {
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: 6px;
+  }
+  
+  .modal-buttons {
+    flex-direction: column;
   }
 }

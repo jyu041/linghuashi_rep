@@ -10,11 +10,13 @@ function GameCanvas({ user, onFightEnemy, loading }) {
   const [isMoving, setIsMoving] = useState(false);
   const [camera, setCamera] = useState({ x: 200, y: 100 });
   const [enemies, setEnemies] = useState([]);
+  const [targetEnemy, setTargetEnemy] = useState(null);
 
   // Map size and canvas view
   const mapSize = { width: 2400, height: 1600 }; // Larger world
   const canvasSize = { width: 800, height: 600 }; // Viewport size
-  const playerSpeed = 2; // pixels per frame
+  const playerSpeed = 3; // Increased speed for better responsiveness
+  const fastMoveSpeed = 8; // Speed when moving to fight
 
   useEffect(() => {
     generateEnemies();
@@ -36,7 +38,8 @@ function GameCanvas({ user, onFightEnemy, loading }) {
     ];
 
     const newEnemies = [];
-    for (let i = 0; i < 30; i++) {
+    for (let i = 0; i < 50; i++) {
+      // Increased enemy count
       const enemyType =
         enemyTypes[Math.floor(Math.random() * enemyTypes.length)];
       newEnemies.push({
@@ -67,12 +70,35 @@ function GameCanvas({ user, onFightEnemy, loading }) {
     const dy = targetPosition.y - playerPosition.y;
     const distance = Math.sqrt(dx * dx + dy * dy);
 
-    if (distance < playerSpeed) {
+    const currentSpeed = targetEnemy ? fastMoveSpeed : playerSpeed;
+
+    if (distance < currentSpeed) {
       setPlayerPosition(targetPosition);
       setIsMoving(false);
+
+      // If we reached an enemy, fight it
+      if (targetEnemy) {
+        onFightEnemy(targetEnemy.type, targetEnemy.x, targetEnemy.y);
+
+        // Remove enemy temporarily
+        setEnemies((prev) => prev.filter((e) => e.id !== targetEnemy.id));
+
+        // Respawn enemy after 3 seconds
+        setTimeout(() => {
+          const newEnemy = {
+            ...targetEnemy,
+            id: Date.now(),
+            x: Math.random() * (mapSize.width - 100) + 50,
+            y: Math.random() * (mapSize.height - 100) + 50,
+          };
+          setEnemies((prev) => [...prev, newEnemy]);
+        }, 3000);
+
+        setTargetEnemy(null);
+      }
     } else {
-      const moveX = (dx / distance) * playerSpeed;
-      const moveY = (dy / distance) * playerSpeed;
+      const moveX = (dx / distance) * currentSpeed;
+      const moveY = (dy / distance) * currentSpeed;
       setPlayerPosition((prev) => ({
         x: prev.x + moveX,
         y: prev.y + moveY,
@@ -204,7 +230,7 @@ function GameCanvas({ user, onFightEnemy, loading }) {
 
     // Draw movement indicator if moving
     if (isMoving) {
-      ctx.strokeStyle = "#00ff00";
+      ctx.strokeStyle = targetEnemy ? "#ff0000" : "#00ff00";
       ctx.lineWidth = 2;
       ctx.setLineDash([5, 5]);
       ctx.beginPath();
@@ -265,31 +291,53 @@ function GameCanvas({ user, onFightEnemy, loading }) {
     });
 
     if (clickedEnemy) {
-      // Fight enemy
-      onFightEnemy(clickedEnemy.type, clickedEnemy.x, clickedEnemy.y);
-
-      // Remove enemy temporarily (it will respawn)
-      setEnemies((prev) => prev.filter((e) => e.id !== clickedEnemy.id));
-
-      // Respawn enemy after 3 seconds
-      setTimeout(() => {
-        const newEnemy = {
-          ...clickedEnemy,
-          id: Date.now(), // New ID
-          x: Math.random() * (mapSize.width - 100) + 50,
-          y: Math.random() * (mapSize.height - 100) + 50,
-        };
-        setEnemies((prev) => [...prev, newEnemy]);
-      }, 3000);
+      // Set target to move to enemy and fight
+      setTargetPosition({ x: clickedEnemy.x, y: clickedEnemy.y });
+      setTargetEnemy(clickedEnemy);
+      setIsMoving(true);
     } else {
       // Set movement target within map bounds
       const clampedX = Math.max(20, Math.min(mapSize.width - 20, worldX));
       const clampedY = Math.max(20, Math.min(mapSize.height - 20, worldY));
 
       setTargetPosition({ x: clampedX, y: clampedY });
+      setTargetEnemy(null);
       setIsMoving(true);
     }
   };
+
+  // Function to find nearest enemy and move to fight it
+  const fightNearestEnemy = () => {
+    if (enemies.length === 0) return;
+
+    let nearestEnemy = null;
+    let nearestDistance = Infinity;
+
+    enemies.forEach((enemy) => {
+      const distance = Math.sqrt(
+        Math.pow(playerPosition.x - enemy.x, 2) +
+          Math.pow(playerPosition.y - enemy.y, 2)
+      );
+      if (distance < nearestDistance) {
+        nearestDistance = distance;
+        nearestEnemy = enemy;
+      }
+    });
+
+    if (nearestEnemy) {
+      setTargetPosition({ x: nearestEnemy.x, y: nearestEnemy.y });
+      setTargetEnemy(nearestEnemy);
+      setIsMoving(true);
+    }
+  };
+
+  // Expose the fight function to parent component
+  useEffect(() => {
+    window.fightNearestEnemy = fightNearestEnemy;
+    return () => {
+      delete window.fightNearestEnemy;
+    };
+  }, [enemies, playerPosition]);
 
   return (
     <div className="game-canvas-container">
@@ -310,7 +358,7 @@ function GameCanvas({ user, onFightEnemy, loading }) {
 
       <div className="canvas-controls">
         <div className="control-hint">
-          <span>💡 点击移动，点击怪物战斗</span>
+          <span>💡 点击移动，点击怪物战斗，或使用战斗按钮自动寻敌</span>
         </div>
         <div className="player-info">
           <span>🥟 包子: {user.buns}</span>
@@ -320,6 +368,7 @@ function GameCanvas({ user, onFightEnemy, loading }) {
             🗺️ 位置: ({Math.floor(playerPosition.x)},{" "}
             {Math.floor(playerPosition.y)})
           </span>
+          <span>👹 敌人数量: {enemies.length}</span>
         </div>
       </div>
 
@@ -342,6 +391,17 @@ function GameCanvas({ user, onFightEnemy, loading }) {
               height: `${(canvasSize.height / mapSize.height) * 100}%`,
             }}
           />
+          {/* Show enemies on minimap */}
+          {enemies.map((enemy) => (
+            <div
+              key={enemy.id}
+              className="mini-map-enemy"
+              style={{
+                left: `${(enemy.x / mapSize.width) * 100}%`,
+                top: `${(enemy.y / mapSize.height) * 100}%`,
+              }}
+            />
+          ))}
         </div>
       </div>
     </div>
