@@ -1,0 +1,460 @@
+/* src/components/game/BottomNavigation.css */
+.bottom-navigation {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(20, 20, 30, 0.95);
+  backdrop-filter: blur(15px);
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+}
+
+.bottom-nav-top {
+  padding: 8px 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.stats-row-1, .stats-row-2 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  margin-bottom: 4px;
+}
+
+.stats-row-2 {
+  margin-bottom: 0;
+}
+
+.level-info, .cultivation-realm {
+  color: white;
+  font-weight: bold;
+  font-size: 0.9rem;
+}
+
+.cultivation-realm {
+  color: #ffd700;
+}
+
+.progress-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.progress-bar {
+  width: 200px;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #4CAF50, #8BC34A);
+  transition: width 0.3s ease;
+}
+
+.progress-text {
+  color: white;
+  font-size: 0.8rem;
+  min-width: 80px;
+}
+
+.breakthrough-btn {
+  background: linear-gradient(45deg, #ff6b6b, #ffd700);
+  border: none;
+  border-radius: 6px;
+  padding: 6px 12px;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.breakthrough-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);
+}
+
+.breakthrough-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.stat-label {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.8rem;
+}
+
+.stat-value {
+  color: white;
+  font-weight: bold;
+  font-size: 0.9rem;
+}
+
+.detailed-stats-btn {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 1rem;
+  color: white;
+  transition: all 0.3s ease;
+}
+
+.detailed-stats-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: scale(1.1);
+}
+
+.bottom-nav-bottom {
+  display: flex;
+  padding: 15px;
+  gap: 15px;
+}
+
+.nav-area {
+  display: flex;
+  flex-direction: column;
+}
+
+.area-1 {
+  flex: 1;
+}
+
+.area-2 {
+  flex: 1.2;
+  gap: 10px;
+}
+
+.area-3 {
+  flex: 1;
+}
+
+.function-grid, .equipment-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+  gap: 8px;
+  height: 100px;
+}
+
+.function-btn, .equipment-slot {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  padding: 4px;
+}
+
+.function-btn:hover, .equipment-slot:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-1px);
+}
+
+.btn-icon, .slot-icon {
+  font-size: 1.2rem;
+}
+
+.btn-text, .slot-name {
+  font-size: 0.7rem;
+  color: white;
+  text-align: center;
+}
+
+.area-2-top, .area-2-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.area-2-top {
+  height: 40px;
+}
+
+.area-2-bottom {
+  height: 60px;
+}
+
+.inventory-btn, .mail-btn, .elite-boss-btn {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 8px;
+  padding: 8px 12px;
+  color: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 0.9rem;
+}
+
+.elite-boss-btn {
+  background: rgba(255, 0, 0, 0.2);
+  border-color: rgba(255, 0, 0, 0.5);
+}
+
+.inventory-btn:hover, .mail-btn:hover, .elite-boss-btn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-1px);
+}
+
+.elite-boss-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.side-buttons-left, .side-buttons-right {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.guild-btn, .cave-btn, .challenge-btn, .main-quest-btn {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 6px;
+  padding: 6px 10px;
+  color: white;
+  cursor: pointer;
+  font-size: 0.8rem;
+  transition: all 0.3s ease;
+}
+
+.guild-btn:hover, .cave-btn:hover, .challenge-btn:hover, .main-quest-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-1px);
+}
+
+.fight-section {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.loot-level-btn, .auto-fight-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(0, 150, 255, 0.3);
+  border: 1px solid rgba(0, 150, 255, 0.6);
+  color: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  transition: all 0.3s ease;
+}
+
+.loot-level-btn:hover, .auto-fight-btn:hover {
+  background: rgba(0, 150, 255, 0.5);
+  transform: scale(1.1);
+}
+
+.main-fight-btn {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: linear-gradient(45deg, #ff6b6b, #ffd700);
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+}
+
+.main-fight-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 20px rgba(255, 215, 0, 0.5);
+}
+
+.multiplier-display {
+  position: absolute;
+  top: -8px;
+  background: rgba(0, 0, 0, 0.8);
+  color: #ffd700;
+  padding: 2px 6px;
+  border-radius: 10px;
+  font-size: 0.7rem;
+  font-weight: bold;
+}
+
+.fight-icon {
+  font-size: 1.8rem;
+  margin-bottom: 2px;
+}
+
+.buns-display {
+  position: absolute;
+  bottom: -8px;
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 2px 6px;
+  border-radius: 10px;
+  font-size: 0.7rem;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.buns-icon {
+  font-size: 0.8rem;
+}
+
+.equipment-slot.equipped {
+  background: rgba(255, 215, 0, 0.1);
+  border-color: rgba(255, 215, 0, 0.5);
+}
+
+.equipment-slot.empty {
+  background: rgba(100, 100, 100, 0.1);
+  border-color: rgba(100, 100, 100, 0.3);
+}
+
+.equipped-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  width: 100%;
+  height: 100%;
+  justify-content: center;
+  border-radius: 6px;
+  border: 1px solid;
+}
+
+.item-icon {
+  font-size: 1.2rem;
+}
+
+.item-tier {
+  font-size: 0.6rem;
+  font-weight: bold;
+  text-align: center;
+}
+
+.empty-slot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  opacity: 0.6;
+}
+
+/* Modal Styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.equipment-modal {
+  background: rgba(20, 20, 30, 0.95);
+  backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 15px;
+  padding: 20px;
+  max-width: 300px;
+  width: 90%;
+  color: white;
+}
+
+.equipment-modal h3 {
+  text-align: center;
+  margin-bottom: 15px;
+  font-size: 1.2rem;
+}
+
+.equipment-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 15px;
+}
+
+.equipment-stats div {
+  display: flex;
+  justify-content: space-between;
+  padding: 4px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.equipment-modal button {
+  width: 100%;
+  background: linear-gradient(45deg, #ffd700, #ff6b6b);
+  border: none;
+  border-radius: 8px;
+  padding: 10px;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.equipment-modal button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);
+}
+
+@media (max-width: 768px) {
+  .bottom-nav-bottom {
+    padding: 10px;
+    gap: 8px;
+  }
+  
+  .function-grid, .equipment-grid {
+    gap: 4px;
+    height: 80px;
+  }
+  
+  .main-fight-btn {
+    width: 60px;
+    height: 60px;
+  }
+  
+  .fight-icon {
+    font-size: 1.4rem;
+  }
+  
+  .stats-row-1, .stats-row-2 {
+    gap: 10px;
+  }
+  
+  .progress-bar {
+    width: 120px;
+  }
+}

@@ -1,0 +1,172 @@
+/* src/components/game/LeftNavigation.css */
+.left-navigation {
+  position: fixed;
+  left: 0;
+  top: 80px;
+  bottom: 200px;
+  width: 150px;
+  background: rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(5px);
+  padding: 20px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  z-index: 90;
+  box-sizing: border-box;
+}
+
+.left-menu-items {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.left-menu-btn {
+  background: rgba(138, 43, 226, 0.2);
+  border: 1px solid rgba(138, 43, 226, 0.5);
+  border-radius: 10px;
+  padding: 12px 8px;
+  color: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  min-height: 60px;
+  justify-content: center;
+}
+
+.left-menu-btn:hover {
+  background: rgba(138, 43, 226, 0.4);
+  transform: translateX(5px);
+  box-shadow: 0 4px 15px rgba(138, 43, 226, 0.3);
+}
+
+.menu-icon {
+  font-size: 1.5rem;
+}
+
+.menu-text {
+  font-size: 0.8rem;
+  font-weight: bold;
+  text-align: center;
+  line-height: 1.2;
+}
+
+.main-mission-container {
+  background: rgba(255, 215, 0, 0.1);
+  border: 1px solid rgba(255, 215, 0, 0.3);
+  border-radius: 10px;
+  padding: 10px;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-top: auto;
+}
+
+.mission-loot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 30px;
+  background: rgba(255, 215, 0, 0.2);
+  border-radius: 6px;
+  padding: 8px 4px;
+}
+
+.loot-icon {
+  font-size: 1.2rem;
+  margin-bottom: 2px;
+}
+
+.loot-amount {
+  font-size: 0.7rem;
+  color: #ffd700;
+  font-weight: bold;
+}
+
+.mission-details {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.mission-objective {
+  color: white;
+  font-size: 0.8rem;
+  font-weight: bold;
+  line-height: 1.2;
+}
+
+.mission-progress {
+  color: #ffd700;
+  font-size: 0.7rem;
+  font-weight: bold;
+}
+
+.mission-progress-bar {
+  width: 100%;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.mission-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #ffd700, #ffb347);
+  transition: width 0.3s ease;
+}
+
+@media (max-width: 768px) {
+  .left-navigation {
+    width: 80px;
+    padding: 15px 5px;
+  }
+  
+  .left-menu-btn {
+    padding: 8px 4px;
+    min-height: 50px;
+  }
+  
+  .menu-icon {
+    font-size: 1.2rem;
+  }
+  
+  .menu-text {
+    font-size: 0.7rem;
+  }
+  
+  .main-mission-container {
+    padding: 8px;
+    flex-direction: column;
+    gap: 4px;
+  }
+  
+  .mission-loot {
+    min-width: auto;
+    width: 100%;
+    flex-direction: row;
+    justify-content: center;
+    padding: 4px;
+  }
+  
+  .loot-icon {
+    font-size: 1rem;
+    margin-bottom: 0;
+    margin-right: 4px;
+  }
+  
+  .mission-objective {
+    font-size: 0.7rem;
+    text-align: center;
+  }
+  
+  .mission-progress {
+    font-size: 0.6rem;
+    text-align: center;
+  }
+}

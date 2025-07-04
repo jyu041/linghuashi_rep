@@ -1,0 +1,182 @@
+/* src/components/game/TopNavigation.css */
+.top-navigation {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 80px;
+  background: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  z-index: 100;
+  box-sizing: border-box;
+}
+
+.profile-section {
+  width: 20%;
+  display: flex;
+  align-items: center;
+}
+
+.profile-avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: linear-gradient(45deg, #ffd700, #ff6b6b);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  color: white;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+}
+
+.main-info-section {
+  width: 80%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.info-row-1 {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 30px;
+}
+
+.display-name {
+  color: white;
+  font-size: 1.2rem;
+  font-weight: bold;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.power-rating {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 215, 0, 0.2);
+  padding: 4px 12px;
+  border-radius: 15px;
+  border: 1px solid rgba(255, 215, 0, 0.5);
+}
+
+.power-label {
+  color: #ffd700;
+  font-size: 0.9rem;
+}
+
+.power-value {
+  color: white;
+  font-weight: bold;
+  font-size: 1rem;
+}
+
+.p2w-icons {
+  display: flex;
+  gap: 8px;
+}
+
+.p2w-icon {
+  width: 30px;
+  height: 30px;
+  background: rgba(138, 43, 226, 0.3);
+  border: 1px solid rgba(138, 43, 226, 0.6);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.p2w-icon:hover {
+  background: rgba(138, 43, 226, 0.5);
+  transform: scale(1.1);
+}
+
+.info-row-2 {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  height: 30px;
+}
+
+.currency-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 4px 12px;
+  border-radius: 15px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.currency-icon {
+  font-size: 1rem;
+}
+
+.currency-amount {
+  color: white;
+  font-weight: bold;
+  font-size: 0.9rem;
+  min-width: 40px;
+  text-align: right;
+}
+
+.currency-plus {
+  background: rgba(255, 215, 0, 0.3);
+  border: 1px solid rgba(255, 215, 0, 0.6);
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffd700;
+  font-size: 0.8rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.currency-plus:hover {
+  background: rgba(255, 215, 0, 0.5);
+  transform: scale(1.1);
+}
+
+@media (max-width: 768px) {
+  .top-navigation {
+    padding: 0 10px;
+    height: 70px;
+  }
+  
+  .profile-avatar {
+    width: 40px;
+    height: 40px;
+    font-size: 1.2rem;
+  }
+  
+  .display-name {
+    font-size: 1rem;
+  }
+  
+  .info-row-2 {
+    gap: 10px;
+  }
+  
+  .currency-item {
+    padding: 2px 8px;
+  }
+  
+  .currency-amount {
+    font-size: 0.8rem;
+    min-width: 30px;
+  }
+}
