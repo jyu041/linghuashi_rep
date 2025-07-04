@@ -3,7 +3,7 @@ Our project goal is to make a game similar to chinese wechat small game called "
 currencies:
 In the game there are three main currencies: "银币" being the lowest tier currency that can only perform very few operations, "元宝" being the premium currency that can purchase many many items or have use cases(users have to pay money such as 648 rmb to get 6480 元宝 in the game), and lastly "天衍令" (users can pay 648 rmb to get 648 of this currency, this currency can be used anywhere in the game that requires users to pay real money). In our game, users can pay money to achieve many things, such as various battle passes, various vip automation tools. For future reference, I will refer to these currencies as silver, gold, godcoins.
 
-primary pages:
+primary pages: 
 - login/register page
 - inital profession + gender + display name selection page
 - main game home page
@@ -116,5 +116,3 @@ Also all dropped items are equippable items for the user to equip, also items ha
 Remember, these dropped equippable items are not stored in the item bag inventory, users can choose to replace these items upon getting a new one. If user chooses not to replace equiped items with new ones, or does chooses to replace, the left over item is sold for 银币. The 银币 values of each sold items depend on their tier and level.
 
 In our game, every 1000 buns consumed, gives one charge to 精英怪, with a maximum charge of 3. Users can click on the 精英怪 button in the bottom nav bar, consume 15 buns and summon a 精英怪 to fight, the 精英怪 is the same as other enemies in the main game, they do not do damage back to the user. What is special about this 精英怪, is that they always drop at least 1 highest tier loot drop, say the user is level 13, with a 0.01% change of getting a 帝品.绝 item on enemy kill, killing the 精英怪 gurantees at least 1 item to be 帝品.绝 level. The 精英怪 drops 15 items every time killed. 
-
-The above concludes the basics of the game.

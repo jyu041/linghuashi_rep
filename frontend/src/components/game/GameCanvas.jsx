@@ -397,18 +397,6 @@ function GameCanvas({ user, onFightEnemy, onUserUpdate }) {
           <p>战斗中...</p>
         </div>
       )}
-
-      {/* <div className="canvas-controls">
-        <div className="control-hint">
-          <span>💡 点击移动，点击怪物战斗，或使用战斗按钮自动寻敌</span>
-        </div>
-        <div className="player-info">
-          <span>🥟 包子: {user.buns}</span>
-          <span>⚡ {user.xMultiplier}倍速</span>
-          <span>📊 掉落等级: {user.lootDropLevel}</span>
-          <span>👹 敌人: {gameStateRef.current.enemies.length}</span>
-        </div>
-      </div> */}
     </div>
   );
 }

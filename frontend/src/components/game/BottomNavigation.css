@@ -10,7 +10,7 @@
   z-index: 100;
   display: flex;
   flex-direction: column;
-  height: 200px; /* Fixed height to prevent overflow */
+  height: 220px; /* Fixed height to prevent overflow */
 }
 
 .bottom-nav-top {
@@ -359,6 +359,10 @@
   font-size: 0.7rem; /* Reduced size */
 }
 
+.equipment-slot {
+  height: 50px;
+}
+
 .equipment-slot.equipped {
   background: rgba(255, 215, 0, 0.1);
   border-color: rgba(255, 215, 0, 0.5);
@@ -382,11 +386,11 @@
 }
 
 .item-icon {
-  font-size: 1rem; /* Reduced size */
+  font-size: 0.5rem; /* Reduced size */
 }
 
 .item-tier {
-  font-size: 0.5rem; /* Reduced size */
+  font-size: 1rem; /* Reduced size */
   font-weight: bold;
   text-align: center;
   color: white;

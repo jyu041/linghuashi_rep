@@ -65,12 +65,12 @@ function BottomNavigationArea3({ user, onEquipmentClick }) {
                   }}
                 >
                   <div className="item-icon">{slot.icon}</div>
-                  <div className="item-tier">{equippedItem.tier}</div>
+                  {/* <div className="item-tier">{equippedItem.tier}</div> */}
                 </div>
               ) : (
                 <div className="empty-slot">
                   <div className="slot-icon">{slot.icon}</div>
-                  <div className="slot-name">{slot.name}</div>
+                  {/* <div className="slot-name">{slot.name}</div> */}
                 </div>
               )}
             </div>
