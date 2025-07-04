@@ -5,13 +5,17 @@ import "./GameCanvas.css";
 function GameCanvas({ user, onFightEnemy, loading }) {
   const canvasRef = useRef(null);
   const animationRef = useRef(null);
-  const [playerPosition, setPlayerPosition] = useState({ x: 600, y: 400 });
-  const [targetPosition, setTargetPosition] = useState({ x: 600, y: 400 });
-  const [isMoving, setIsMoving] = useState(false);
-  const [camera, setCamera] = useState({ x: 200, y: 100 });
-  const [enemies, setEnemies] = useState([]);
-  const [targetEnemy, setTargetEnemy] = useState(null);
+  const gameStateRef = useRef({
+    playerPosition: { x: 600, y: 400 },
+    targetPosition: { x: 600, y: 400 },
+    isMoving: false,
+    camera: { x: 200, y: 100 },
+    enemies: [],
+    targetEnemy: null,
+  });
+
   const [canvasReady, setCanvasReady] = useState(false);
+  const [forceUpdate, setForceUpdate] = useState(0);
 
   // Map size and canvas view
   const mapSize = { width: 2400, height: 1600 };
@@ -53,10 +57,11 @@ function GameCanvas({ user, onFightEnemy, loading }) {
       newEnemies.push(enemy);
     }
 
-    setEnemies(newEnemies);
-  }, [user.level, mapSize.width, mapSize.height]);
+    gameStateRef.current.enemies = newEnemies;
+    setForceUpdate((prev) => prev + 1); // Force re-render
+  }, [user.level]);
 
-  // Game loop with proper dependency management
+  // Start game loop only once when canvas is ready
   useEffect(() => {
     if (!canvasReady) return;
 
@@ -74,125 +79,112 @@ function GameCanvas({ user, onFightEnemy, loading }) {
         cancelAnimationFrame(animationRef.current);
       }
     };
-  }, [
-    canvasReady,
-    isMoving,
-    playerPosition,
-    targetPosition,
-    targetEnemy,
-    camera,
-    enemies,
-  ]);
+  }, [canvasReady]); // Only depend on canvasReady
 
-  const updatePlayerMovement = useCallback(() => {
-    if (!isMoving) return;
+  const updatePlayerMovement = () => {
+    const gameState = gameStateRef.current;
+    if (!gameState.isMoving) return;
 
-    const dx = targetPosition.x - playerPosition.x;
-    const dy = targetPosition.y - playerPosition.y;
+    const dx = gameState.targetPosition.x - gameState.playerPosition.x;
+    const dy = gameState.targetPosition.y - gameState.playerPosition.y;
     const distance = Math.sqrt(dx * dx + dy * dy);
 
-    const currentSpeed = targetEnemy ? fastMoveSpeed : playerSpeed;
+    const currentSpeed = gameState.targetEnemy ? fastMoveSpeed : playerSpeed;
 
     if (distance < currentSpeed) {
-      setPlayerPosition(targetPosition);
-      setIsMoving(false);
+      gameState.playerPosition = { ...gameState.targetPosition };
+      gameState.isMoving = false;
 
-      if (targetEnemy) {
+      if (gameState.targetEnemy) {
         // Fight the enemy
-        onFightEnemy(targetEnemy.type, targetEnemy.x, targetEnemy.y);
+        onFightEnemy(
+          gameState.targetEnemy.type,
+          gameState.targetEnemy.x,
+          gameState.targetEnemy.y
+        );
 
         // Remove the fought enemy
-        setEnemies((prev) => prev.filter((e) => e.id !== targetEnemy.id));
+        gameState.enemies = gameState.enemies.filter(
+          (e) => e.id !== gameState.targetEnemy.id
+        );
 
         // Respawn enemy after delay
         setTimeout(() => {
           const newEnemy = {
-            ...targetEnemy,
+            ...gameState.targetEnemy,
             id: `enemy_respawn_${Date.now()}`,
             x: Math.random() * (mapSize.width - 200) + 100,
             y: Math.random() * (mapSize.height - 200) + 100,
           };
-          setEnemies((prev) => [...prev, newEnemy]);
+          gameState.enemies.push(newEnemy);
         }, 3000);
 
-        setTargetEnemy(null);
+        gameState.targetEnemy = null;
       }
     } else {
       const moveX = (dx / distance) * currentSpeed;
       const moveY = (dy / distance) * currentSpeed;
 
-      setPlayerPosition((prev) => ({
-        x: prev.x + moveX,
-        y: prev.y + moveY,
-      }));
+      gameState.playerPosition = {
+        x: gameState.playerPosition.x + moveX,
+        y: gameState.playerPosition.y + moveY,
+      };
     }
-  }, [
-    isMoving,
-    targetPosition,
-    playerPosition,
-    targetEnemy,
-    onFightEnemy,
-    mapSize,
-  ]);
+  };
 
-  const updateCamera = useCallback(() => {
+  const updateCamera = () => {
+    const gameState = gameStateRef.current;
     const newCameraX = Math.max(
       0,
       Math.min(
         mapSize.width - canvasSize.width,
-        playerPosition.x - canvasSize.width / 2
+        gameState.playerPosition.x - canvasSize.width / 2
       )
     );
     const newCameraY = Math.max(
       0,
       Math.min(
         mapSize.height - canvasSize.height,
-        playerPosition.y - canvasSize.height / 2
+        gameState.playerPosition.y - canvasSize.height / 2
       )
     );
 
-    setCamera({ x: newCameraX, y: newCameraY });
-  }, [playerPosition, mapSize, canvasSize]);
+    gameState.camera = { x: newCameraX, y: newCameraY };
+  };
 
-  const drawCanvas = useCallback(() => {
+  const drawCanvas = () => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
+    const gameState = gameStateRef.current;
+
     // Clear canvas
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     // Save context and apply camera transform
     ctx.save();
-    ctx.translate(-camera.x, -camera.y);
+    ctx.translate(-gameState.camera.x, -gameState.camera.y);
 
     // Draw background
     drawBackground(ctx);
 
     // Draw all enemies
-    enemies.forEach((enemy) => {
+    gameState.enemies.forEach((enemy) => {
       drawEnemy(ctx, enemy);
     });
 
     // Draw player
-    drawPlayer(ctx);
+    drawPlayer(ctx, gameState);
 
     // Restore context
     ctx.restore();
 
     // Draw UI info
-    drawUIInfo(ctx);
-  }, [
-    camera,
-    enemies,
-    playerPosition,
-    isMoving,
-    targetPosition,
-    targetEnemy,
-    user,
-  ]);
+    drawUIInfo(ctx, gameState);
+  };
 
   const drawBackground = (ctx) => {
     // Draw world background with gradient
@@ -225,13 +217,19 @@ function GameCanvas({ user, onFightEnemy, loading }) {
     }
   };
 
-  const drawPlayer = (ctx) => {
+  const drawPlayer = (ctx, gameState) => {
     // Player circle
     ctx.fillStyle = "#ffd700";
     ctx.strokeStyle = "#ff6b6b";
     ctx.lineWidth = 3;
     ctx.beginPath();
-    ctx.arc(playerPosition.x, playerPosition.y, 20, 0, 2 * Math.PI);
+    ctx.arc(
+      gameState.playerPosition.x,
+      gameState.playerPosition.y,
+      20,
+      0,
+      2 * Math.PI
+    );
     ctx.fill();
     ctx.stroke();
 
@@ -242,28 +240,36 @@ function GameCanvas({ user, onFightEnemy, loading }) {
     ctx.textBaseline = "middle";
     ctx.fillText(
       user.gender === "male" ? "♂" : "♀",
-      playerPosition.x,
-      playerPosition.y
+      gameState.playerPosition.x,
+      gameState.playerPosition.y
     );
 
     // Player name
     ctx.fillStyle = "#fff";
     ctx.font = "bold 12px Arial";
-    ctx.fillText(user.displayName, playerPosition.x, playerPosition.y - 35);
+    ctx.fillText(
+      user.displayName,
+      gameState.playerPosition.x,
+      gameState.playerPosition.y - 35
+    );
 
     // Player level
     ctx.fillStyle = "#ffd700";
     ctx.font = "10px Arial";
-    ctx.fillText(`Lv.${user.level}`, playerPosition.x, playerPosition.y + 35);
+    ctx.fillText(
+      `Lv.${user.level}`,
+      gameState.playerPosition.x,
+      gameState.playerPosition.y + 35
+    );
 
     // Movement indicator
-    if (isMoving) {
-      ctx.strokeStyle = targetEnemy ? "#ff0000" : "#00ff00";
+    if (gameState.isMoving) {
+      ctx.strokeStyle = gameState.targetEnemy ? "#ff0000" : "#00ff00";
       ctx.lineWidth = 2;
       ctx.setLineDash([5, 5]);
       ctx.beginPath();
-      ctx.moveTo(playerPosition.x, playerPosition.y);
-      ctx.lineTo(targetPosition.x, targetPosition.y);
+      ctx.moveTo(gameState.playerPosition.x, gameState.playerPosition.y);
+      ctx.lineTo(gameState.targetPosition.x, gameState.targetPosition.y);
       ctx.stroke();
       ctx.setLineDash([]);
     }
@@ -296,7 +302,7 @@ function GameCanvas({ user, onFightEnemy, loading }) {
     ctx.fillText(enemy.type, enemy.x, enemy.y - 30);
   };
 
-  const drawUIInfo = (ctx) => {
+  const drawUIInfo = (ctx, gameState) => {
     // Draw UI information overlay (not affected by camera)
     ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
     ctx.fillRect(10, 10, 200, 60);
@@ -304,15 +310,15 @@ function GameCanvas({ user, onFightEnemy, loading }) {
     ctx.fillStyle = "#ffffff";
     ctx.font = "12px Arial";
     ctx.textAlign = "left";
-    ctx.fillText(`敌人数量: ${enemies.length}`, 15, 25);
+    ctx.fillText(`敌人数量: ${gameState.enemies.length}`, 15, 25);
     ctx.fillText(
-      `坐标: (${Math.floor(playerPosition.x)}, ${Math.floor(
-        playerPosition.y
+      `坐标: (${Math.floor(gameState.playerPosition.x)}, ${Math.floor(
+        gameState.playerPosition.y
       )})`,
       15,
       40
     );
-    ctx.fillText(`移动状态: ${isMoving ? "移动中" : "静止"}`, 15, 55);
+    ctx.fillText(`移动状态: ${gameState.isMoving ? "移动中" : "静止"}`, 15, 55);
   };
 
   const handleCanvasClick = useCallback(
@@ -328,11 +334,11 @@ function GameCanvas({ user, onFightEnemy, loading }) {
       const canvasY = (event.clientY - rect.top) * scaleY;
 
       // Convert to world coordinates
-      const worldX = canvasX + camera.x;
-      const worldY = canvasY + camera.y;
+      const worldX = canvasX + gameStateRef.current.camera.x;
+      const worldY = canvasY + gameStateRef.current.camera.y;
 
       // Check for enemy clicks with larger hit area
-      const clickedEnemy = enemies.find((enemy) => {
+      const clickedEnemy = gameStateRef.current.enemies.find((enemy) => {
         const distance = Math.sqrt(
           Math.pow(worldX - enemy.x, 2) + Math.pow(worldY - enemy.y, 2)
         );
@@ -341,25 +347,29 @@ function GameCanvas({ user, onFightEnemy, loading }) {
 
       if (clickedEnemy) {
         console.log("Attacking enemy:", clickedEnemy);
-        setTargetPosition({ x: clickedEnemy.x, y: clickedEnemy.y });
-        setTargetEnemy(clickedEnemy);
-        setIsMoving(true);
+        gameStateRef.current.targetPosition = {
+          x: clickedEnemy.x,
+          y: clickedEnemy.y,
+        };
+        gameStateRef.current.targetEnemy = clickedEnemy;
+        gameStateRef.current.isMoving = true;
       } else {
         // Move to clicked position
         const clampedX = Math.max(25, Math.min(mapSize.width - 25, worldX));
         const clampedY = Math.max(25, Math.min(mapSize.height - 25, worldY));
 
         console.log("Moving to:", clampedX, clampedY);
-        setTargetPosition({ x: clampedX, y: clampedY });
-        setTargetEnemy(null);
-        setIsMoving(true);
+        gameStateRef.current.targetPosition = { x: clampedX, y: clampedY };
+        gameStateRef.current.targetEnemy = null;
+        gameStateRef.current.isMoving = true;
       }
     },
-    [loading, camera, enemies, mapSize]
+    [loading]
   );
 
   const fightNearestEnemy = useCallback(() => {
-    if (enemies.length === 0) {
+    const gameState = gameStateRef.current;
+    if (gameState.enemies.length === 0) {
       alert("附近没有敌人！");
       return;
     }
@@ -367,10 +377,10 @@ function GameCanvas({ user, onFightEnemy, loading }) {
     let nearestEnemy = null;
     let nearestDistance = Infinity;
 
-    enemies.forEach((enemy) => {
+    gameState.enemies.forEach((enemy) => {
       const distance = Math.sqrt(
-        Math.pow(playerPosition.x - enemy.x, 2) +
-          Math.pow(playerPosition.y - enemy.y, 2)
+        Math.pow(gameState.playerPosition.x - enemy.x, 2) +
+          Math.pow(gameState.playerPosition.y - enemy.y, 2)
       );
       if (distance < nearestDistance) {
         nearestDistance = distance;
@@ -380,11 +390,11 @@ function GameCanvas({ user, onFightEnemy, loading }) {
 
     if (nearestEnemy) {
       console.log("Fighting nearest enemy:", nearestEnemy);
-      setTargetPosition({ x: nearestEnemy.x, y: nearestEnemy.y });
-      setTargetEnemy(nearestEnemy);
-      setIsMoving(true);
+      gameState.targetPosition = { x: nearestEnemy.x, y: nearestEnemy.y };
+      gameState.targetEnemy = nearestEnemy;
+      gameState.isMoving = true;
     }
-  }, [enemies, playerPosition]);
+  }, []);
 
   // Expose fight function globally for bottom navigation
   useEffect(() => {
@@ -419,7 +429,7 @@ function GameCanvas({ user, onFightEnemy, loading }) {
           <span>🥟 包子: {user.buns}</span>
           <span>⚡ {user.xMultiplier}倍速</span>
           <span>📊 掉落等级: {user.lootDropLevel}</span>
-          <span>👹 敌人: {enemies.length}</span>
+          <span>👹 敌人: {gameStateRef.current.enemies.length}</span>
         </div>
       </div>
     </div>
