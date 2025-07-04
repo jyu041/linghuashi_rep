@@ -84,7 +84,8 @@ function GameHomePage({ user, token, onLogout }) {
         fightCooldownRef.current = now;
 
         // Update user state
-        await fetchUserData();
+        // await fetchUserData();
+        await updateUserData();
 
         // Show loot results if any
         if (data.lootResults && data.lootResults.length > 0) {
