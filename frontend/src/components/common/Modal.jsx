@@ -8,6 +8,7 @@ function Modal({
   children,
   size = "medium",
   className = "",
+  isCanvasModal = false, // New prop for canvas overlay modals
 }) {
   if (!isOpen) return null;
 
@@ -30,8 +31,12 @@ function Modal({
     }
   };
 
+  const overlayClassName = `modal-overlay ${
+    isCanvasModal ? "canvas-modal" : ""
+  }`;
+
   return (
-    <div className="modal-overlay" onClick={handleOverlayClick}>
+    <div className={overlayClassName} onClick={handleOverlayClick}>
       <div
         className={`modal-content ${getSizeClass()} ${className}`}
         onClick={(e) => e.stopPropagation()}

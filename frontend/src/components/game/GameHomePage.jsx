@@ -4,7 +4,7 @@ import "./GameHomePage.css";
 import TopNavigation from "./TopNavigation";
 import LeftNavigation from "./LeftNavigation";
 import RightNavigation from "./RightNavigation";
-import BottomNavigation from "./BottomNavigation";
+import BottomNavigationContainer from "./BottomNavigationContainer";
 import GameCanvas from "./GameCanvas";
 import Modal from "../common/Modal";
 
@@ -306,8 +306,8 @@ function GameHomePage({ user, token, onLogout }) {
         loading={loading}
       />
 
-      {/* Bottom Navigation */}
-      <BottomNavigation
+      {/* Bottom Navigation Container */}
+      <BottomNavigationContainer
         user={gameUser}
         token={token}
         onFightEliteBoss={handleFightEliteBoss}
@@ -315,13 +315,14 @@ function GameHomePage({ user, token, onLogout }) {
         onUserUpdate={updateUserData}
       />
 
-      {/* Shared Modal Component */}
+      {/* Feature Modals (non-canvas modals) */}
       <Modal
         isOpen={!!showModal}
         onClose={closeModal}
         title={getModalTitle()}
         size={getModalSize()}
         className={showModal === "loot" ? "loot-modal-custom" : ""}
+        isCanvasModal={false} // These are regular modals
       >
         {renderModalContent()}
       </Modal>

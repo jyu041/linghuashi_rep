@@ -13,14 +13,23 @@ function GameCanvas({ user, onFightEnemy, loading }) {
   const [targetEnemy, setTargetEnemy] = useState(null);
 
   // Map size and canvas view
-  const mapSize = { width: 2400, height: 1600 }; // Larger world
-  const canvasSize = { width: 800, height: 600 }; // Viewport size
-  const playerSpeed = 3; // Increased speed for better responsiveness
-  const fastMoveSpeed = 8; // Speed when moving to fight
+  const mapSize = { width: 2400, height: 1600 };
+  const canvasSize = { width: 800, height: 600 };
+  const playerSpeed = 3;
+  const fastMoveSpeed = 8;
 
   useEffect(() => {
     generateEnemies();
-    startGameLoop();
+  }, [user.level]);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (canvas) {
+      canvas.width = canvasSize.width;
+      canvas.height = canvasSize.height;
+      startGameLoop();
+    }
+
     return () => {
       if (animationRef.current) {
         cancelAnimationFrame(animationRef.current);
@@ -39,7 +48,6 @@ function GameCanvas({ user, onFightEnemy, loading }) {
 
     const newEnemies = [];
     for (let i = 0; i < 50; i++) {
-      // Increased enemy count
       const enemyType =
         enemyTypes[Math.floor(Math.random() * enemyTypes.length)];
       newEnemies.push({
@@ -51,6 +59,7 @@ function GameCanvas({ user, onFightEnemy, loading }) {
       });
     }
     setEnemies(newEnemies);
+    console.log(`Generated ${newEnemies.length} enemies`); // Debug log
   };
 
   const startGameLoop = () => {
@@ -76,14 +85,10 @@ function GameCanvas({ user, onFightEnemy, loading }) {
       setPlayerPosition(targetPosition);
       setIsMoving(false);
 
-      // If we reached an enemy, fight it
       if (targetEnemy) {
         onFightEnemy(targetEnemy.type, targetEnemy.x, targetEnemy.y);
-
-        // Remove enemy temporarily
         setEnemies((prev) => prev.filter((e) => e.id !== targetEnemy.id));
 
-        // Respawn enemy after 3 seconds
         setTimeout(() => {
           const newEnemy = {
             ...targetEnemy,
@@ -107,7 +112,6 @@ function GameCanvas({ user, onFightEnemy, loading }) {
   };
 
   const updateCamera = () => {
-    // Center camera on player with bounds checking
     const newCameraX = Math.max(
       0,
       Math.min(
@@ -131,40 +135,25 @@ function GameCanvas({ user, onFightEnemy, loading }) {
     if (!canvas) return;
 
     const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // Save context for camera transformation
     ctx.save();
     ctx.translate(-camera.x, -camera.y);
 
-    // Draw background
     drawBackground(ctx);
 
-    // Draw enemies
+    // Draw all enemies (remove viewport culling for debugging)
     enemies.forEach((enemy) => {
-      if (isInViewport(enemy.x, enemy.y)) {
-        drawEnemy(ctx, enemy);
-      }
+      drawEnemy(ctx, enemy);
     });
 
-    // Draw player
     drawPlayer(ctx);
-
-    // Restore context
     ctx.restore();
   };
 
-  const isInViewport = (x, y) => {
-    return (
-      x >= camera.x - 50 &&
-      x <= camera.x + canvasSize.width + 50 &&
-      y >= camera.y - 50 &&
-      y <= camera.y + canvasSize.height + 50
-    );
-  };
-
   const drawBackground = (ctx) => {
-    // Draw world background
     const gradient = ctx.createLinearGradient(0, 0, 0, mapSize.height);
     gradient.addColorStop(0, "#2c3e50");
     gradient.addColorStop(0.5, "#34495e");
@@ -173,7 +162,6 @@ function GameCanvas({ user, onFightEnemy, loading }) {
     ctx.fillStyle = gradient;
     ctx.fillRect(0, 0, mapSize.width, mapSize.height);
 
-    // Draw grid pattern only in viewport area
     ctx.strokeStyle = "rgba(255, 255, 255, 0.1)";
     ctx.lineWidth = 1;
 
@@ -198,7 +186,6 @@ function GameCanvas({ user, onFightEnemy, loading }) {
   };
 
   const drawPlayer = (ctx) => {
-    // Draw player circle
     ctx.fillStyle = "#ffd700";
     ctx.strokeStyle = "#ff6b6b";
     ctx.lineWidth = 3;
@@ -207,7 +194,6 @@ function GameCanvas({ user, onFightEnemy, loading }) {
     ctx.fill();
     ctx.stroke();
 
-    // Draw player symbol
     ctx.fillStyle = "#000";
     ctx.font = "bold 16px Arial";
     ctx.textAlign = "center";
@@ -218,17 +204,14 @@ function GameCanvas({ user, onFightEnemy, loading }) {
       playerPosition.y
     );
 
-    // Draw player name
     ctx.fillStyle = "#fff";
     ctx.font = "bold 12px Arial";
     ctx.fillText(user.displayName, playerPosition.x, playerPosition.y - 35);
 
-    // Draw level
     ctx.fillStyle = "#ffd700";
     ctx.font = "10px Arial";
     ctx.fillText(`Lv.${user.level}`, playerPosition.x, playerPosition.y + 35);
 
-    // Draw movement indicator if moving
     if (isMoving) {
       ctx.strokeStyle = targetEnemy ? "#ff0000" : "#00ff00";
       ctx.lineWidth = 2;
@@ -242,7 +225,6 @@ function GameCanvas({ user, onFightEnemy, loading }) {
   };
 
   const drawEnemy = (ctx, enemy) => {
-    // Draw enemy
     ctx.fillStyle = enemy.color;
     ctx.strokeStyle = "#fff";
     ctx.lineWidth = 2;
@@ -251,18 +233,15 @@ function GameCanvas({ user, onFightEnemy, loading }) {
     ctx.fill();
     ctx.stroke();
 
-    // Draw enemy emoji
     ctx.font = "20px Arial";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     ctx.fillText(enemy.emoji, enemy.x, enemy.y);
 
-    // Draw enemy level
     ctx.fillStyle = "#fff";
     ctx.font = "bold 10px Arial";
     ctx.fillText(`Lv.${enemy.level}`, enemy.x, enemy.y + 25);
 
-    // Draw enemy type
     ctx.font = "8px Arial";
     ctx.fillText(enemy.type, enemy.x, enemy.y - 25);
   };
@@ -278,11 +257,9 @@ function GameCanvas({ user, onFightEnemy, loading }) {
     const canvasX = (event.clientX - rect.left) * scaleX;
     const canvasY = (event.clientY - rect.top) * scaleY;
 
-    // Convert canvas coordinates to world coordinates
     const worldX = canvasX + camera.x;
     const worldY = canvasY + camera.y;
 
-    // Check if clicked on an enemy
     const clickedEnemy = enemies.find((enemy) => {
       const distance = Math.sqrt(
         Math.pow(worldX - enemy.x, 2) + Math.pow(worldY - enemy.y, 2)
@@ -291,12 +268,10 @@ function GameCanvas({ user, onFightEnemy, loading }) {
     });
 
     if (clickedEnemy) {
-      // Set target to move to enemy and fight
       setTargetPosition({ x: clickedEnemy.x, y: clickedEnemy.y });
       setTargetEnemy(clickedEnemy);
       setIsMoving(true);
     } else {
-      // Set movement target within map bounds
       const clampedX = Math.max(20, Math.min(mapSize.width - 20, worldX));
       const clampedY = Math.max(20, Math.min(mapSize.height - 20, worldY));
 
@@ -306,9 +281,11 @@ function GameCanvas({ user, onFightEnemy, loading }) {
     }
   };
 
-  // Function to find nearest enemy and move to fight it
   const fightNearestEnemy = () => {
-    if (enemies.length === 0) return;
+    if (enemies.length === 0) {
+      console.log("No enemies available");
+      return;
+    }
 
     let nearestEnemy = null;
     let nearestDistance = Infinity;
@@ -331,7 +308,6 @@ function GameCanvas({ user, onFightEnemy, loading }) {
     }
   };
 
-  // Expose the fight function to parent component
   useEffect(() => {
     window.fightNearestEnemy = fightNearestEnemy;
     return () => {
@@ -372,7 +348,6 @@ function GameCanvas({ user, onFightEnemy, loading }) {
         </div>
       </div>
 
-      {/* Mini-map */}
       <div className="mini-map">
         <div className="mini-map-content">
           <div
@@ -391,14 +366,19 @@ function GameCanvas({ user, onFightEnemy, loading }) {
               height: `${(canvasSize.height / mapSize.height) * 100}%`,
             }}
           />
-          {/* Show enemies on minimap */}
           {enemies.map((enemy) => (
             <div
               key={enemy.id}
               className="mini-map-enemy"
               style={{
+                position: "absolute",
                 left: `${(enemy.x / mapSize.width) * 100}%`,
                 top: `${(enemy.y / mapSize.height) * 100}%`,
+                width: "2px",
+                height: "2px",
+                background: "#ff0000",
+                borderRadius: "50%",
+                transform: "translate(-50%, -50%)",
               }}
             />
           ))}
