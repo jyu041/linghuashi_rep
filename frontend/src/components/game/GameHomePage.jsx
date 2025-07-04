@@ -12,6 +12,7 @@ function GameHomePage({ user, token, onLogout }) {
   const [gameUser, setGameUser] = useState(user);
   const [selectedItems, setSelectedItems] = useState([]);
   const [showModal, setShowModal] = useState(null);
+  const [modalData, setModalData] = useState(null); // For passing data to modals
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -169,9 +170,125 @@ function GameHomePage({ user, token, onLogout }) {
     }
   };
 
+  const handleUpgradeLootLevel = async () => {
+    try {
+      const response = await fetch(
+        "http://localhost:8080/api/game/upgrade-loot-level",
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      const data = await response.json();
+      if (data.success) {
+        alert(data.message);
+        updateUserData();
+        closeModal();
+      } else {
+        alert(data.message);
+      }
+    } catch (error) {
+      console.error("Upgrade failed:", error);
+      alert("升级失败，请重试");
+    }
+  };
+
+  // Enhanced modal opener that can handle data
+  const handleModalOpen = (modalType, data = null) => {
+    setShowModal(modalType);
+    setModalData(data);
+  };
+
   const closeModal = () => {
     setShowModal(null);
+    setModalData(null);
     setSelectedItems([]);
+  };
+
+  // Calculate drop rates for loot level modal
+  const calculateDropRates = (level) => {
+    const rates = {};
+
+    if (level === 1) {
+      rates["凡品"] = 69.0;
+      rates["良品"] = 20.0;
+      rates["上品"] = 10.0;
+      rates["极品"] = 1.0;
+    } else if (level === 2) {
+      rates["凡品"] = 53.99;
+      rates["良品"] = 25.0;
+      rates["上品"] = 18.0;
+      rates["极品"] = 2.81;
+      rates["灵品"] = 0.2;
+    } else if (level >= 13) {
+      if (level === 13) {
+        rates["灵品"] = 53.39;
+        rates["王品"] = 30.1;
+        rates["圣品"] = 9.22;
+        rates["帝品"] = 4.61;
+        rates["帝品.精"] = 2.0;
+        rates["帝品.珍"] = 0.59;
+        rates["帝品.极"] = 0.08;
+        rates["帝品.绝"] = 0.01;
+      } else if (level === 14) {
+        rates["王品"] = 53.4;
+        rates["圣品"] = 29.65;
+        rates["帝品"] = 9.44;
+        rates["帝品.精"] = 4.98;
+        rates["帝品.珍"] = 1.86;
+        rates["帝品.极"] = 0.58;
+        rates["帝品.绝"] = 0.08;
+        rates["仙品.精"] = 0.01;
+      } else if (level >= 15) {
+        rates["圣品"] = 40.0;
+        rates["帝品"] = 25.0;
+        rates["帝品.精"] = 15.0;
+        rates["帝品.珍"] = 10.0;
+        rates["帝品.极"] = 7.0;
+        rates["帝品.绝"] = 2.5;
+        rates["仙品.精"] = 0.4;
+        rates["仙品.极"] = 0.1;
+      }
+    } else {
+      const factor = (level - 2.0) / 11.0;
+      rates["凡品"] = Math.max(0, 53.99 * (1 - factor));
+      rates["良品"] = 25.0 + factor * 5;
+      rates["上品"] = 18.0 + factor * 10;
+      rates["极品"] = 2.81 + factor * 15;
+      rates["灵品"] = 0.2 + factor * 53.19;
+      if (factor > 0.5) {
+        rates["王品"] = (factor - 0.5) * 60;
+      }
+    }
+
+    return rates;
+  };
+
+  const calculateUpgradeCost = (currentLevel) => {
+    return Math.floor(1000 * Math.pow(1.5, currentLevel - 1));
+  };
+
+  const getTierColor = (tier) => {
+    const colors = {
+      凡品: "#808080",
+      良品: "#008000",
+      上品: "#008B8B",
+      极品: "#DDA0DD",
+      灵品: "#FFFF00",
+      王品: "#FFA500",
+      圣品: "#FF0000",
+      帝品: "#FFC0CB",
+      "帝品.精": "#800080",
+      "帝品.珍": "#006400",
+      "帝品.极": "#00008B",
+      "帝品.绝": "#4B0082",
+      "仙品.精": "#B8860B",
+      "仙品.极": "#8B0000",
+    };
+    return colors[tier] || "#808080";
   };
 
   const renderLootModal = () => (
@@ -210,10 +327,99 @@ function GameHomePage({ user, token, onLogout }) {
     </div>
   );
 
+  const renderLootLevelUpgradeModal = () => {
+    const currentRates = calculateDropRates(gameUser.lootDropLevel);
+    const nextRates = calculateDropRates(gameUser.lootDropLevel + 1);
+    const upgradeCost = calculateUpgradeCost(gameUser.lootDropLevel);
+
+    return (
+      <div className="loot-level-content">
+        <div className="current-level-section">
+          <h4>当前等级 {gameUser.lootDropLevel} 掉落率:</h4>
+          <div className="drop-rates">
+            {Object.entries(currentRates).map(([tier, rate]) => (
+              <div key={tier} className="rate-item">
+                <span
+                  className="tier-name"
+                  style={{ color: getTierColor(tier) }}
+                >
+                  {tier}
+                </span>
+                <span className="rate-value">{rate.toFixed(2)}%</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="next-level-section">
+          <h4>升级到等级 {gameUser.lootDropLevel + 1} 掉落率:</h4>
+          <div className="drop-rates">
+            {Object.entries(nextRates).map(([tier, rate]) => (
+              <div key={tier} className="rate-item">
+                <span
+                  className="tier-name"
+                  style={{ color: getTierColor(tier) }}
+                >
+                  {tier}
+                </span>
+                <span className="rate-value">{rate.toFixed(2)}%</span>
+                {!currentRates[tier] && <span className="new-tier">新!</span>}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="upgrade-cost">
+          <p>升级费用: {upgradeCost} 银币</p>
+          <p>你的银币: {gameUser.silverCoins}</p>
+        </div>
+
+        <div className="modal-buttons">
+          <button
+            className="upgrade-btn"
+            onClick={handleUpgradeLootLevel}
+            disabled={gameUser.silverCoins < upgradeCost}
+          >
+            升级 ({upgradeCost} 银币)
+          </button>
+          <button className="cancel-btn" onClick={closeModal}>
+            取消
+          </button>
+        </div>
+      </div>
+    );
+  };
+
+  const renderEquipmentDetailsModal = () => {
+    if (!modalData) return null;
+
+    return (
+      <div className="equipment-details">
+        <div className="equipment-stats">
+          <div>类型: {modalData.type}</div>
+          <div>
+            品质:{" "}
+            <span style={{ color: modalData.color }}>{modalData.tier}</span>
+          </div>
+          <div>等级: {modalData.level}</div>
+          <div>攻击: +{modalData.attackBonus}</div>
+          <div>防御: +{modalData.defenseBonus}</div>
+          <div>生命: +{modalData.healthBonus}</div>
+          <div>速度: +{modalData.speedBonus}</div>
+          <div>战力: +{modalData.powerRatingBonus}</div>
+        </div>
+      </div>
+    );
+  };
+
   const renderModalContent = () => {
     switch (showModal) {
       case "loot":
         return renderLootModal();
+      case "lootLevelUpgrade":
+        return renderLootLevelUpgradeModal();
+      case "equipmentDetails":
+        return renderEquipmentDetailsModal();
       case "掌天瓶":
         return <div className="placeholder-content">掌天瓶功能开发中...</div>;
       case "星海壶":
@@ -243,6 +449,10 @@ function GameHomePage({ user, token, onLogout }) {
     switch (showModal) {
       case "loot":
         return "战利品";
+      case "lootLevelUpgrade":
+        return "掉落等级升级";
+      case "equipmentDetails":
+        return modalData?.name || "装备详情";
       case "掌天瓶":
         return "掌天瓶";
       case "星海壶":
@@ -272,6 +482,10 @@ function GameHomePage({ user, token, onLogout }) {
     switch (showModal) {
       case "loot":
         return "extra-large";
+      case "lootLevelUpgrade":
+        return "large";
+      case "equipmentDetails":
+        return "small";
       case "福利":
       case "超值豪礼":
       case "活动":
@@ -279,6 +493,11 @@ function GameHomePage({ user, token, onLogout }) {
       default:
         return "medium";
     }
+  };
+
+  // Determine if modal should be canvas modal (appears over game area)
+  const isCanvasModal = () => {
+    return ["lootLevelUpgrade", "equipmentDetails"].includes(showModal);
   };
 
   return (
@@ -294,10 +513,10 @@ function GameHomePage({ user, token, onLogout }) {
       <TopNavigation user={gameUser} />
 
       {/* Left Navigation */}
-      <LeftNavigation user={gameUser} onModalOpen={setShowModal} />
+      <LeftNavigation user={gameUser} onModalOpen={handleModalOpen} />
 
       {/* Right Navigation */}
-      <RightNavigation user={gameUser} onModalOpen={setShowModal} />
+      <RightNavigation user={gameUser} onModalOpen={handleModalOpen} />
 
       {/* Main Game Canvas */}
       <GameCanvas
@@ -311,18 +530,18 @@ function GameHomePage({ user, token, onLogout }) {
         user={gameUser}
         token={token}
         onFightEliteBoss={handleFightEliteBoss}
-        onModalOpen={setShowModal}
+        onModalOpen={handleModalOpen}
         onUserUpdate={updateUserData}
       />
 
-      {/* Feature Modals (non-canvas modals) */}
+      {/* Unified Modal System */}
       <Modal
         isOpen={!!showModal}
         onClose={closeModal}
         title={getModalTitle()}
         size={getModalSize()}
         className={showModal === "loot" ? "loot-modal-custom" : ""}
-        isCanvasModal={false} // These are regular modals
+        isCanvasModal={isCanvasModal()}
       >
         {renderModalContent()}
       </Modal>
