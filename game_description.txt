@@ -86,7 +86,35 @@ The whole list of first step cultivation realms is as listed as below:
 阳实 321~360
 judging by the current calculation steps, if I am not wrong, for level 359 to reach level 360, the math would be:
 100 + 358*20 + 8*500 = 11260xp, which isn't all too bad and seems pretty balanced.
+The higher level of 渡劫 the player attempts, would have higher percentage chance of failing, which removes 20% of the user's current xp, say they are at 5000/5000 for 渡劫, and they failed due to unlucky, they keep 4000 xp, requiring them to collect 1000 xp again to reach the 5000 xp requirement inorder for them to 渡劫 again. In our game we can allow the user to 炼丹, which users can consume these meds to increase their percentage chance of 渡劫 successfullness.
 
-================ TODO: talk about loot drop system logic ===================
+The lootdrop system has multiple tiers of loot, they also have different colors:
+凡品 - grey
+良品 - green
+上品 - dark cyan
+极品 - light purple
+灵品 - bright yellow
+王品 - orange
+圣品 - red
+帝品 - pink
+帝品.精 - purple to blue gradient
+帝品.珍 - slightly dark green to light green gradient
+帝品.极 - slightly dark blue to light blue gradient
+帝品.绝 - slightly dark purple to light purple gradient
+仙品.精 - slightly dark gold to light gold gradient
+仙品.极 - slightly dark red to light red gradient
+User can upgrade the loot drop level to increase chances of getting better loot. At level 1:
+凡品 69%, 良品 20%, 上品 10%, 极品 1%, rest is 0%
+Upgrading to level 2 the chances change:
+凡品 53.99%, 良品 25%, 上品 18%, 极品 2.81%, 灵品 0.2%, rest is 0%
+At level 13 the user should have the following chances:
+灵品 53.39%, 王品 30.10%, 圣品 9.22%, 帝品 4.61%, 帝品.精 2.00%, 帝品.珍 0.59%, 帝品.极 0.08%, 帝品.绝 0.01%, and any unmentioned lootdrop tiers have 0% drop rate
+At level 14 the user should have the following chances:
+灵品 0.00%, 王品 53.40%, 圣品 29.65%, 帝品 9.44%, 帝品.精 4.98%, 帝品.珍 1.86%, 帝品.极 0.58%, 帝品.绝 0.08%, 仙品.精 0.01%, and any unmentioned lootdrop tiers have 0% drop rate
+You should follow the pattern and calculate all the drop rates for each level. 
+Also all dropped items are equippable items for the user to equip, also items have levels, which will be within +3 to -3 of the user's level. 
+Remember, these dropped equippable items are not stored in the item bag inventory, users can choose to replace these items upon getting a new one. If user chooses not to replace equiped items with new ones, or does chooses to replace, the left over item is sold for 银币. The 银币 values of each sold items depend on their tier and level.
 
-In our game, every 1000 buns consumed, gives one charge to 精英怪, with a maximum charge of 3. Users can click on the 精英怪 button in the bottom nav bar, consume 15 buns and summon a 精英怪 to fight, the 精英怪 is the same as other enemies in the main game, they do not do damage back to the user. What is special about this 精英怪
+In our game, every 1000 buns consumed, gives one charge to 精英怪, with a maximum charge of 3. Users can click on the 精英怪 button in the bottom nav bar, consume 15 buns and summon a 精英怪 to fight, the 精英怪 is the same as other enemies in the main game, they do not do damage back to the user. What is special about this 精英怪, is that they always drop at least 1 highest tier loot drop, say the user is level 13, with a 0.01% change of getting a 帝品.绝 item on enemy kill, killing the 精英怪 gurantees at least 1 item to be 帝品.绝 level. The 精英怪 drops 15 items every time killed. 
+
+The above concludes the basics of the game.
