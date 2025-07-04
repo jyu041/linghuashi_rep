@@ -1,0 +1,33 @@
+TODO 1. Complete Overhaul to CSS system. We will replace the current CSS system with XXX.module.css, our classNames will be: className={XXX.XXXX}, helping us keeping CSS separate, as currently I think some CSS have similar class names causing interuptions and clashes. This will be a large change in the whole code base. 
+
+TODO 2. On the right navigation section, i want the 日常 and 市场 buttons to be removed. I want the 活动 button to have consistent button size to the 限时礼包 and 新手礼包 buttons. Upon clicking on the 活动 button, it should open up the drop down menu to the left, instead of down, this drop down menu should have a dimmed background color, looking like a speach bubble with the small triangle pointing towards the 活动 button when clicked.
+
+TODO 3. Fix the fighting logic, currently I get the following console error:
+Fight failed: ReferenceError: fetchUserData is not defined
+    handleFightEnemy GameHomePage.jsx:87
+<anonymous code>:1:145535
+    overrideMethod <anonymous code>:1
+    handleFightEnemy GameHomePage.jsx:98
+
+TODO 4. Fix the items tier colors. Currently the colors are just incorrect and messed up. In the LootLevelModal I want the background of the tiers to change color based on the tiers, currently it is the text that changes color, and it is not emphasizing enough of showing the difference in tiers. Also tiers like 帝品.精, instead of having a "." in between 帝品 and 精, I want the dot ascii symbol. The colors in equipmentSlot in the BottomNavigationArea3 for the different tiers of items are also incorrect, the correct colors are below:
+凡品 - grey
+良品 - green
+上品 - dark cyan
+极品 - light purple
+灵品 - bright yellow
+王品 - orange
+圣品 - red
+帝品 - pink
+帝品.精 - purple to blue gradient
+帝品.珍 - slightly dark green to light green gradient
+帝品.极 - slightly dark blue to light blue gradient
+帝品.绝 - slightly dark purple to light purple gradient
+仙品.精 - slightly dark gold to light gold gradient
+仙品.极 - slightly dark red to light red gradient
+Make sure the gradient's are balanced with 50:50 ratio. 
+
+TODO 5. Upon clicking on the magnifying glass icon button in the BottomNavigationTop section, it should bring up a modal. The modal should be splitted into four main sections: “基础属性”，“战斗属性/抗性”，“元素属性/抗性”，“特殊属性”. In 基础属性 we should have: 生命，攻击，防御，速度，元素攻击，元素防御. In 战斗属性/抗性, we should have：吸血，吸血抗性，反击，反击抗性，连击，连击抗性，闪避，闪避抗性，暴击，暴击抗性，击晕，击晕抗性. In 元素属性/抗性 we should have: 流血，流血抗性，缠绕，缠绕抗性，冰冻，冰冻抗性，燃烧，燃烧抗性，坚韧，坚韧抗性. Finally in 特殊属性, we should have: 强化爆伤，弱化爆伤，强化治疗，弱化治疗，强化灵兽，弱化灵兽，最终增伤，最终减伤，PVE增伤，PVE减伤，PVP增伤，PVP减伤. If our user does not have these stats, they are default set to 0. By default a new user should have stats in 生命，攻击，防御，速度. Later on we will add methods of gaining all of these bonus stats.
+
+TODO 6. The canvas size, playable area is just weird. My requirements are that the top of the canvas reaches all the way to the top of the screen, the left and right of the canvas reaches all the way to the left and right of the screen, the playable area should follow the canvas size. Upon resize of the screen/viewport, the canvas size changes with it. 
+
+TODO 7. Completing the missions in the left navigation area should reward users with small amount of buns (10~20). 

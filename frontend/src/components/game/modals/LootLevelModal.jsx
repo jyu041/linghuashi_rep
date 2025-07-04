@@ -1,6 +1,7 @@
 // src/components/game/modals/LootLevelModal.jsx
 import { useState } from "react";
 import "./LootLevelModal.css";
+import { formatChineseNumber } from "../../../utils/formatNumber";
 
 function LootLevelModal({ user, onUpgrade, onUpgradeXMultiplier, onClose }) {
   const [activeTab, setActiveTab] = useState("dropRates");
@@ -185,8 +186,8 @@ function LootLevelModal({ user, onUpgrade, onUpgradeXMultiplier, onClose }) {
           </div>
 
           <div className="upgrade-cost">
-            <p>升级费用: {upgradeCost} 银币</p>
-            <p>你的银币: {user.silverCoins}</p>
+            <p>升级费用: {formatChineseNumber(upgradeCost)} 银币</p>
+            <p>你的银币: {formatChineseNumber(user.silverCoins)}</p>
           </div>
 
           <div className="modal-buttons">
@@ -195,7 +196,7 @@ function LootLevelModal({ user, onUpgrade, onUpgradeXMultiplier, onClose }) {
               onClick={onUpgrade}
               disabled={user.silverCoins < upgradeCost}
             >
-              升级 ({upgradeCost} 银币)
+              升级 ({formatChineseNumber(upgradeCost)} 银币)
             </button>
             <button className="cancel-btn" onClick={onClose}>
               取消
