@@ -1,4 +1,5 @@
 // src/components/game/BottomNavigationArea2.jsx
+import { formatChineseNumber } from "../../utils/formatNumber";
 
 function BottomNavigationArea2({
   user,
@@ -6,6 +7,14 @@ function BottomNavigationArea2({
   onMainFightClick,
   onShowLootLevelModal,
 }) {
+  const handleMainFightClick = () => {
+    if (user.buns <= 0) {
+      alert("包子不足，无法战斗！");
+      return;
+    }
+    onMainFightClick();
+  };
+
   return (
     <div className="nav-area area-2">
       {/* Top section */}
@@ -38,15 +47,17 @@ function BottomNavigationArea2({
             onClick={onShowLootLevelModal}
             title="升级掉落等级"
           >
-            {user.lootDropLevel}
+            {user.lootDropLevel}级
           </button>
 
-          <div className="main-fight-btn" onClick={onMainFightClick}>
-            <div className="multiplier-display">{user.xMultiplier}倍</div>
+          <div className="main-fight-btn" onClick={handleMainFightClick}>
+            <div className="multiplier-display">{user.xMultiplier || 1}倍</div>
             <div className="fight-icon">⚔️</div>
             <div className="buns-display">
               <span className="buns-icon">🥟</span>
-              <span className="buns-count">{user.buns}</span>
+              <span className="buns-count">
+                {formatChineseNumber(user.buns)}
+              </span>
             </div>
           </div>
 

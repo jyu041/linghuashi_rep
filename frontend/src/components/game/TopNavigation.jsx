@@ -1,21 +1,12 @@
 // src/components/game/TopNavigation.jsx
 import "./TopNavigation.css";
+import { formatChineseNumber } from "../../utils/formatNumber";
 
 function TopNavigation({ user }) {
   const getProfileImage = () => {
     // Default avatar based on gender and profession
     const genderSymbol = user.gender === "male" ? "♂" : "♀";
     return genderSymbol;
-  };
-
-  const formatNumber = (num) => {
-    if (num >= 1000000) {
-      return (num / 1000000).toFixed(1) + "M";
-    }
-    if (num >= 1000) {
-      return (num / 1000).toFixed(1) + "K";
-    }
-    return num.toString();
   };
 
   const getP2WIcons = () => {
@@ -65,7 +56,7 @@ function TopNavigation({ user }) {
           <div className="power-rating">
             <span className="power-label">战力</span>
             <span className="power-value">
-              {formatNumber(user.powerRating)}
+              {formatChineseNumber(user.powerRating)}
             </span>
           </div>
           <div className="p2w-icons">{getP2WIcons()}</div>
@@ -76,21 +67,21 @@ function TopNavigation({ user }) {
           <div className="currency-item">
             <span className="currency-icon">🪙</span>
             <span className="currency-amount">
-              {formatNumber(user.silverCoins)}
+              {formatChineseNumber(user.silverCoins)}
             </span>
             <button className="currency-plus">+</button>
           </div>
           <div className="currency-item">
             <span className="currency-icon">💰</span>
             <span className="currency-amount">
-              {formatNumber(user.goldCoins)}
+              {formatChineseNumber(user.goldCoins)}
             </span>
             <button className="currency-plus">+</button>
           </div>
           <div className="currency-item">
             <span className="currency-icon">💎</span>
             <span className="currency-amount">
-              {formatNumber(user.godCoins)}
+              {formatChineseNumber(user.godCoins)}
             </span>
             <button className="currency-plus">+</button>
           </div>

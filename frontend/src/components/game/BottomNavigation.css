@@ -10,11 +10,13 @@
   z-index: 100;
   display: flex;
   flex-direction: column;
+  height: 200px; /* Fixed height to prevent overflow */
 }
 
 .bottom-nav-top {
   padding: 8px 20px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  flex-shrink: 0;
 }
 
 .top-section-container {
@@ -34,6 +36,7 @@
   display: flex;
   align-items: center;
   gap: 15px;
+  flex-grow: 1;
 }
 
 .level-cultivation {
@@ -57,10 +60,11 @@
   display: flex;
   align-items: center;
   gap: 8px;
+  flex-grow: 1;
 }
 
 .progress-bar {
-  width: 200px;
+  width: 350px; /* Increased width */
   height: 8px;
   background: rgba(255, 255, 255, 0.2);
   border-radius: 4px;
@@ -140,8 +144,10 @@
 
 .bottom-nav-bottom {
   display: flex;
-  padding: 15px;
+  padding: 10px; /* Reduced padding */
   gap: 15px;
+  flex: 1;
+  overflow: hidden;
 }
 
 .nav-area {
@@ -155,7 +161,7 @@
 
 .area-2 {
   flex: 1.2;
-  gap: 10px;
+  gap: 8px; /* Reduced gap */
 }
 
 .area-3 {
@@ -166,8 +172,8 @@
   display: grid;
   grid-template-columns: repeat(6, 1fr);
   grid-template-rows: repeat(2, 1fr);
-  gap: 8px;
-  height: 100px;
+  gap: 6px; /* Reduced gap */
+  height: 80px; /* Reduced height */
 }
 
 .function-btn, .equipment-slot {
@@ -181,7 +187,7 @@
   align-items: center;
   justify-content: center;
   gap: 2px;
-  padding: 4px;
+  padding: 3px; /* Reduced padding */
 }
 
 .function-btn:hover, .equipment-slot:hover {
@@ -190,11 +196,11 @@
 }
 
 .btn-icon, .slot-icon {
-  font-size: 1.2rem;
+  font-size: 1rem; /* Reduced size */
 }
 
 .btn-text, .slot-name {
-  font-size: 0.7rem;
+  font-size: 0.6rem; /* Reduced size */
   color: white;
   text-align: center;
 }
@@ -207,27 +213,37 @@
 }
 
 .area-2-top {
-  height: 40px;
+  height: 35px; /* Reduced height */
 }
 
 .area-2-bottom {
-  height: 60px;
+  height: 55px; /* Reduced height */
 }
 
-.inventory-btn, .mail-btn, .elite-boss-btn {
+.inventory-btn, .mail-btn {
   background: rgba(255, 255, 255, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.3);
   border-radius: 8px;
-  padding: 8px 12px;
+  padding: 6px 10px; /* Reduced padding */
   color: white;
   cursor: pointer;
   transition: all 0.3s ease;
-  font-size: 0.9rem;
+  font-size: 0.8rem; /* Reduced font size */
+  position: relative;
+  left: -10px; /* Move left */
 }
 
 .elite-boss-btn {
   background: rgba(255, 0, 0, 0.2);
-  border-color: rgba(255, 0, 0, 0.5);
+  border: 1px solid rgba(255, 0, 0, 0.5);
+  border-radius: 8px;
+  padding: 6px 10px; /* Reduced padding */
+  color: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 0.8rem; /* Reduced font size */
+  position: relative;
+  right: -10px; /* Move right */
 }
 
 .inventory-btn:hover, .mail-btn:hover, .elite-boss-btn:hover:not(:disabled) {
@@ -242,17 +258,17 @@
 
 .side-buttons-left, .side-buttons-right {
   display: flex;
-  gap: 8px;
+  gap: 6px; /* Reduced gap */
 }
 
 .guild-btn, .cave-btn, .challenge-btn, .main-quest-btn {
   background: rgba(255, 255, 255, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.3);
   border-radius: 6px;
-  padding: 8px 12px;
+  padding: 6px 10px; /* Reduced padding */
   color: white;
   cursor: pointer;
-  font-size: 0.8rem;
+  font-size: 0.7rem; /* Reduced font size */
   transition: all 0.3s ease;
   flex: 1;
 }
@@ -265,12 +281,12 @@
 .fight-section {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px; /* Reduced gap */
 }
 
 .loot-level-btn, .auto-fight-btn {
-  width: 40px;
-  height: 40px;
+  width: 35px; /* Reduced size */
+  height: 35px; /* Reduced size */
   border-radius: 50%;
   background: rgba(0, 150, 255, 0.3);
   border: 1px solid rgba(0, 150, 255, 0.6);
@@ -281,6 +297,7 @@
   justify-content: center;
   font-weight: bold;
   transition: all 0.3s ease;
+  font-size: 0.7rem; /* Reduced font size */
 }
 
 .loot-level-btn:hover, .auto-fight-btn:hover {
@@ -289,8 +306,8 @@
 }
 
 .main-fight-btn {
-  width: 80px;
-  height: 80px;
+  width: 70px; /* Reduced size */
+  height: 70px; /* Reduced size */
   border-radius: 50%;
   background: linear-gradient(45deg, #ff6b6b, #ffd700);
   border: 3px solid rgba(255, 255, 255, 0.3);
@@ -311,35 +328,35 @@
 
 .multiplier-display {
   position: absolute;
-  top: -8px;
+  top: -6px; /* Adjusted position */
   background: rgba(0, 0, 0, 0.8);
   color: #ffd700;
   padding: 2px 6px;
   border-radius: 10px;
-  font-size: 0.7rem;
+  font-size: 0.6rem; /* Reduced font size */
   font-weight: bold;
 }
 
 .fight-icon {
-  font-size: 1.8rem;
+  font-size: 1.5rem; /* Reduced size */
   margin-bottom: 2px;
 }
 
 .buns-display {
   position: absolute;
-  bottom: -8px;
+  bottom: -6px; /* Adjusted position */
   background: rgba(0, 0, 0, 0.8);
   color: white;
   padding: 2px 6px;
   border-radius: 10px;
-  font-size: 0.7rem;
+  font-size: 0.6rem; /* Reduced font size */
   display: flex;
   align-items: center;
   gap: 2px;
 }
 
 .buns-icon {
-  font-size: 0.8rem;
+  font-size: 0.7rem; /* Reduced size */
 }
 
 .equipment-slot.equipped {
@@ -365,11 +382,11 @@
 }
 
 .item-icon {
-  font-size: 1.2rem;
+  font-size: 1rem; /* Reduced size */
 }
 
 .item-tier {
-  font-size: 0.6rem;
+  font-size: 0.5rem; /* Reduced size */
   font-weight: bold;
   text-align: center;
   color: white;
@@ -390,17 +407,17 @@
   }
   
   .progress-bar {
-    width: 120px;
+    width: 250px;
   }
   
   .bottom-nav-bottom {
-    padding: 10px;
+    padding: 8px;
     gap: 8px;
   }
   
   .function-grid, .equipment-grid {
     gap: 4px;
-    height: 80px;
+    height: 70px;
   }
   
   .main-fight-btn {
@@ -409,7 +426,7 @@
   }
   
   .fight-icon {
-    font-size: 1.4rem;
+    font-size: 1.2rem;
   }
   
   .side-buttons-left, .side-buttons-right {
@@ -418,6 +435,6 @@
   }
   
   .guild-btn, .cave-btn, .challenge-btn, .main-quest-btn {
-    padding: 6px 8px;
+    padding: 4px 6px;
   }
 }

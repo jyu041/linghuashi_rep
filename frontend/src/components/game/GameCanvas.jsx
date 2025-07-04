@@ -1,85 +1,153 @@
 // src/components/game/GameCanvas.jsx
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useRef, useEffect, useCallback, useState } from "react";
 import "./GameCanvas.css";
 
-function GameCanvas({ user, onFightEnemy, loading }) {
+function GameCanvas({ user, onFightEnemy, onUserUpdate }) {
   const canvasRef = useRef(null);
-  const animationRef = useRef(null);
   const gameStateRef = useRef({
-    playerPosition: { x: 600, y: 400 },
-    targetPosition: { x: 600, y: 400 },
+    playerPosition: { x: 400, y: 300 },
+    targetPosition: { x: 400, y: 300 },
     isMoving: false,
-    camera: { x: 200, y: 100 },
-    enemies: [],
     targetEnemy: null,
+    enemies: [],
+    camera: { x: 0, y: 0 },
+    lastFightTime: 0,
   });
 
-  const [canvasReady, setCanvasReady] = useState(false);
-  const [forceUpdate, setForceUpdate] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const [canvasSize, setCanvasSize] = useState({ width: 800, height: 600 });
+  const mapSize = { width: 1600, height: 1200 };
 
-  // Map size and canvas view
-  const mapSize = { width: 2400, height: 1600 };
-  const canvasSize = { width: 800, height: 600 };
-  const playerSpeed = 4;
-  const fastMoveSpeed = 10;
-
-  // Initialize canvas and enemies
+  // Resize canvas to fit container
   useEffect(() => {
-    const canvas = canvasRef.current;
-    if (canvas) {
-      canvas.width = canvasSize.width;
-      canvas.height = canvasSize.height;
-      generateEnemies();
-      setCanvasReady(true);
-    }
+    const updateCanvasSize = () => {
+      const container = canvasRef.current?.parentElement;
+      if (container) {
+        setCanvasSize({
+          width: container.clientWidth,
+          height: container.clientHeight,
+        });
+      }
+    };
+
+    updateCanvasSize();
+    window.addEventListener("resize", updateCanvasSize);
+    return () => window.removeEventListener("resize", updateCanvasSize);
   }, []);
 
-  const generateEnemies = useCallback(() => {
-    const enemyTypes = [
-      { type: "Goblin", emoji: "👹", color: "#8B4513" },
-      { type: "Orc", emoji: "🧌", color: "#228B22" },
-      { type: "Skeleton", emoji: "💀", color: "#D3D3D3" },
-      { type: "Wolf", emoji: "🐺", color: "#696969" },
-      { type: "Spider", emoji: "🕷️", color: "#800080" },
-    ];
-
-    const newEnemies = [];
-    for (let i = 0; i < 25; i++) {
-      const enemyType =
-        enemyTypes[Math.floor(Math.random() * enemyTypes.length)];
-      const enemy = {
-        id: `enemy_${i}_${Date.now()}`,
-        ...enemyType,
-        x: Math.random() * (mapSize.width - 200) + 100,
-        y: Math.random() * (mapSize.height - 200) + 100,
-        level: Math.max(1, user.level + Math.floor(Math.random() * 6) - 3),
-      };
-      newEnemies.push(enemy);
+  // Initialize enemies
+  useEffect(() => {
+    const gameState = gameStateRef.current;
+    if (gameState.enemies.length === 0) {
+      // Generate initial enemies
+      for (let i = 0; i < 15; i++) {
+        const enemy = {
+          id: `enemy_${i}`,
+          x: Math.random() * (mapSize.width - 200) + 100,
+          y: Math.random() * (mapSize.height - 200) + 100,
+          type: Math.random() > 0.7 ? "Orc" : "Goblin",
+          level: Math.max(1, user.level + Math.floor(Math.random() * 6) - 3),
+          color: Math.random() > 0.7 ? "#8B4513" : "#228B22",
+          emoji: Math.random() > 0.7 ? "👹" : "👺",
+        };
+        gameState.enemies.push(enemy);
+      }
     }
-
-    gameStateRef.current.enemies = newEnemies;
-    setForceUpdate((prev) => prev + 1); // Force re-render
   }, [user.level]);
 
-  // Start game loop only once when canvas is ready
+  // Game loop
   useEffect(() => {
-    if (!canvasReady) return;
-
     const gameLoop = () => {
       updatePlayerMovement();
       updateCamera();
       drawCanvas();
-      animationRef.current = requestAnimationFrame(gameLoop);
     };
 
-    gameLoop();
+    const interval = setInterval(gameLoop, 16); // 60 FPS
+    return () => clearInterval(interval);
+  }, []);
 
-    return () => {
-      if (animationRef.current) {
-        cancelAnimationFrame(animationRef.current);
+  const handleCanvasClick = useCallback(
+    (event) => {
+      const canvas = canvasRef.current;
+      if (!canvas) return;
+
+      const rect = canvas.getBoundingClientRect();
+      const x = event.clientX - rect.left;
+      const y = event.clientY - rect.top;
+
+      const gameState = gameStateRef.current;
+      const worldX = x + gameState.camera.x;
+      const worldY = y + gameState.camera.y;
+
+      // Check if clicked on an enemy
+      const clickedEnemy = gameState.enemies.find((enemy) => {
+        const distance = Math.sqrt(
+          Math.pow(enemy.x - worldX, 2) + Math.pow(enemy.y - worldY, 2)
+        );
+        return distance < 25;
+      });
+
+      if (clickedEnemy) {
+        // Check cooldown and buns
+        const now = Date.now();
+        if (now - gameState.lastFightTime < 1000) {
+          return; // Cooldown active
+        }
+
+        if (user.buns <= 0) {
+          alert("包子不足，无法战斗！");
+          return;
+        }
+
+        gameState.targetPosition = { x: clickedEnemy.x, y: clickedEnemy.y };
+        gameState.targetEnemy = clickedEnemy;
+        gameState.isMoving = true;
+      } else {
+        // Move to clicked position
+        gameState.targetPosition = { x: worldX, y: worldY };
+        gameState.targetEnemy = null;
+        gameState.isMoving = true;
       }
-    };
-  }, [canvasReady]); // Only depend on canvasReady
+    },
+    [user.buns]
+  );
+
+  const fightNearestEnemy = useCallback(() => {
+    // Check cooldown and buns
+    const now = Date.now();
+    if (now - gameStateRef.current.lastFightTime < 1000) {
+      return; // Cooldown active
+    }
+
+    if (user.buns <= 0) {
+      alert("包子不足，无法战斗！");
+      return;
+    }
+
+    const gameState = gameStateRef.current;
+    const playerPos = gameState.playerPosition;
+
+    // Find nearest enemy
+    let nearestEnemy = null;
+    let minDistance = Infinity;
+
+    gameState.enemies.forEach((enemy) => {
+      const distance = Math.sqrt(
+        Math.pow(enemy.x - playerPos.x, 2) + Math.pow(enemy.y - playerPos.y, 2)
+      );
+      if (distance < minDistance) {
+        minDistance = distance;
+        nearestEnemy = enemy;
+      }
+    });
+
+    if (nearestEnemy) {
+      gameState.targetPosition = { x: nearestEnemy.x, y: nearestEnemy.y };
+      gameState.targetEnemy = nearestEnemy;
+      gameState.isMoving = true;
+    }
+  }, [user.buns]);
 
   const updatePlayerMovement = () => {
     const gameState = gameStateRef.current;
@@ -89,6 +157,8 @@ function GameCanvas({ user, onFightEnemy, loading }) {
     const dy = gameState.targetPosition.y - gameState.playerPosition.y;
     const distance = Math.sqrt(dx * dx + dy * dy);
 
+    const playerSpeed = 3;
+    const fastMoveSpeed = 8;
     const currentSpeed = gameState.targetEnemy ? fastMoveSpeed : playerSpeed;
 
     if (distance < currentSpeed) {
@@ -96,6 +166,9 @@ function GameCanvas({ user, onFightEnemy, loading }) {
       gameState.isMoving = false;
 
       if (gameState.targetEnemy) {
+        // Set cooldown
+        gameState.lastFightTime = Date.now();
+
         // Fight the enemy
         onFightEnemy(
           gameState.targetEnemy.type,
@@ -181,35 +254,33 @@ function GameCanvas({ user, onFightEnemy, loading }) {
 
     // Restore context
     ctx.restore();
-
-    // Draw UI info
-    drawUIInfo(ctx, gameState);
   };
 
   const drawBackground = (ctx) => {
     // Draw world background with gradient
-    const gradient = ctx.createLinearGradient(0, 0, 0, mapSize.height);
-    gradient.addColorStop(0, "#2c3e50");
-    gradient.addColorStop(0.5, "#34495e");
-    gradient.addColorStop(1, "#2c3e50");
+    const gradient = ctx.createLinearGradient(
+      0,
+      0,
+      mapSize.width,
+      mapSize.height
+    );
+    gradient.addColorStop(0, "#1a1a2e");
+    gradient.addColorStop(0.5, "#16213e");
+    gradient.addColorStop(1, "#0f3460");
 
     ctx.fillStyle = gradient;
     ctx.fillRect(0, 0, mapSize.width, mapSize.height);
 
-    // Draw grid pattern
+    // Draw grid for reference
     ctx.strokeStyle = "rgba(255, 255, 255, 0.1)";
     ctx.lineWidth = 1;
-
-    // Vertical lines
-    for (let x = 0; x <= mapSize.width; x += 100) {
+    for (let x = 0; x < mapSize.width; x += 100) {
       ctx.beginPath();
       ctx.moveTo(x, 0);
       ctx.lineTo(x, mapSize.height);
       ctx.stroke();
     }
-
-    // Horizontal lines
-    for (let y = 0; y <= mapSize.height; y += 100) {
+    for (let y = 0; y < mapSize.height; y += 100) {
       ctx.beginPath();
       ctx.moveTo(0, y);
       ctx.lineTo(mapSize.width, y);
@@ -218,9 +289,9 @@ function GameCanvas({ user, onFightEnemy, loading }) {
   };
 
   const drawPlayer = (ctx, gameState) => {
-    // Player circle
-    ctx.fillStyle = "#ffd700";
-    ctx.strokeStyle = "#ff6b6b";
+    // Draw player circle
+    ctx.fillStyle = "#4CAF50";
+    ctx.strokeStyle = "#ffffff";
     ctx.lineWidth = 3;
     ctx.beginPath();
     ctx.arc(
@@ -233,9 +304,9 @@ function GameCanvas({ user, onFightEnemy, loading }) {
     ctx.fill();
     ctx.stroke();
 
-    // Player symbol
+    // Draw player symbol
     ctx.fillStyle = "#000";
-    ctx.font = "bold 16px Arial";
+    ctx.font = "bold 20px Arial";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     ctx.fillText(
@@ -302,100 +373,6 @@ function GameCanvas({ user, onFightEnemy, loading }) {
     ctx.fillText(enemy.type, enemy.x, enemy.y - 30);
   };
 
-  const drawUIInfo = (ctx, gameState) => {
-    // Draw UI information overlay (not affected by camera)
-    ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
-    ctx.fillRect(10, 10, 200, 60);
-
-    ctx.fillStyle = "#ffffff";
-    ctx.font = "12px Arial";
-    ctx.textAlign = "left";
-    ctx.fillText(`敌人数量: ${gameState.enemies.length}`, 15, 25);
-    ctx.fillText(
-      `坐标: (${Math.floor(gameState.playerPosition.x)}, ${Math.floor(
-        gameState.playerPosition.y
-      )})`,
-      15,
-      40
-    );
-    ctx.fillText(`移动状态: ${gameState.isMoving ? "移动中" : "静止"}`, 15, 55);
-  };
-
-  const handleCanvasClick = useCallback(
-    (event) => {
-      if (loading) return;
-
-      const canvas = canvasRef.current;
-      const rect = canvas.getBoundingClientRect();
-      const scaleX = canvas.width / rect.width;
-      const scaleY = canvas.height / rect.height;
-
-      const canvasX = (event.clientX - rect.left) * scaleX;
-      const canvasY = (event.clientY - rect.top) * scaleY;
-
-      // Convert to world coordinates
-      const worldX = canvasX + gameStateRef.current.camera.x;
-      const worldY = canvasY + gameStateRef.current.camera.y;
-
-      // Check for enemy clicks with larger hit area
-      const clickedEnemy = gameStateRef.current.enemies.find((enemy) => {
-        const distance = Math.sqrt(
-          Math.pow(worldX - enemy.x, 2) + Math.pow(worldY - enemy.y, 2)
-        );
-        return distance <= 30; // Larger hit area for easier clicking
-      });
-
-      if (clickedEnemy) {
-        console.log("Attacking enemy:", clickedEnemy);
-        gameStateRef.current.targetPosition = {
-          x: clickedEnemy.x,
-          y: clickedEnemy.y,
-        };
-        gameStateRef.current.targetEnemy = clickedEnemy;
-        gameStateRef.current.isMoving = true;
-      } else {
-        // Move to clicked position
-        const clampedX = Math.max(25, Math.min(mapSize.width - 25, worldX));
-        const clampedY = Math.max(25, Math.min(mapSize.height - 25, worldY));
-
-        console.log("Moving to:", clampedX, clampedY);
-        gameStateRef.current.targetPosition = { x: clampedX, y: clampedY };
-        gameStateRef.current.targetEnemy = null;
-        gameStateRef.current.isMoving = true;
-      }
-    },
-    [loading]
-  );
-
-  const fightNearestEnemy = useCallback(() => {
-    const gameState = gameStateRef.current;
-    if (gameState.enemies.length === 0) {
-      alert("附近没有敌人！");
-      return;
-    }
-
-    let nearestEnemy = null;
-    let nearestDistance = Infinity;
-
-    gameState.enemies.forEach((enemy) => {
-      const distance = Math.sqrt(
-        Math.pow(gameState.playerPosition.x - enemy.x, 2) +
-          Math.pow(gameState.playerPosition.y - enemy.y, 2)
-      );
-      if (distance < nearestDistance) {
-        nearestDistance = distance;
-        nearestEnemy = enemy;
-      }
-    });
-
-    if (nearestEnemy) {
-      console.log("Fighting nearest enemy:", nearestEnemy);
-      gameState.targetPosition = { x: nearestEnemy.x, y: nearestEnemy.y };
-      gameState.targetEnemy = nearestEnemy;
-      gameState.isMoving = true;
-    }
-  }, []);
-
   // Expose fight function globally for bottom navigation
   useEffect(() => {
     window.fightNearestEnemy = fightNearestEnemy;
@@ -421,7 +398,7 @@ function GameCanvas({ user, onFightEnemy, loading }) {
         </div>
       )}
 
-      <div className="canvas-controls">
+      {/* <div className="canvas-controls">
         <div className="control-hint">
           <span>💡 点击移动，点击怪物战斗，或使用战斗按钮自动寻敌</span>
         </div>
@@ -431,7 +408,7 @@ function GameCanvas({ user, onFightEnemy, loading }) {
           <span>📊 掉落等级: {user.lootDropLevel}</span>
           <span>👹 敌人: {gameStateRef.current.enemies.length}</span>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 }

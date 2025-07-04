@@ -1,28 +1,23 @@
 /* src/components/game/GameCanvas.css */
 .game-canvas-container {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 180px;
+  top: 80px;
+  left: 0; /* Extend to left edge */
+  right: 0; /* Extend to right edge */
+  bottom: 200px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  z-index: 10;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
   overflow: hidden;
 }
 
 .game-canvas {
-  cursor: crosshair;
   width: 100%;
   height: 100%;
-  object-fit: contain;
-  background: #2c3e50;
-}
-
-.game-canvas:hover {
-  filter: brightness(1.05);
+  cursor: crosshair;
+  background: transparent;
 }
 
 .canvas-loading {
@@ -31,104 +26,59 @@
   left: 50%;
   transform: translate(-50%, -50%);
   background: rgba(0, 0, 0, 0.8);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  border-radius: 15px;
-  padding: 30px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 15px;
   color: white;
-  z-index: 60;
+  padding: 20px;
+  border-radius: 10px;
+  text-align: center;
+  z-index: 1000;
 }
 
 .combat-animation {
-  font-size: 3rem;
-  animation: combatSpin 1s linear infinite;
+  font-size: 2rem;
+  animation: spin 1s linear infinite;
 }
 
-@keyframes combatSpin {
-  0% { transform: rotate(0deg) scale(1); }
-  25% { transform: rotate(90deg) scale(1.2); }
-  50% { transform: rotate(180deg) scale(1); }
-  75% { transform: rotate(270deg) scale(1.2); }
-  100% { transform: rotate(360deg) scale(1); }
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
 
 .canvas-controls {
   position: absolute;
-  bottom: 10px;
-  left: 10px;
+  top: 10px;
   right: 10px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
   background: rgba(0, 0, 0, 0.7);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 10px;
-  padding: 10px 15px;
+  padding: 10px;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 0.8rem;
   color: white;
-  font-size: 0.9rem;
+  max-width: 300px;
 }
 
 .control-hint {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  color: rgba(255, 255, 255, 0.8);
-  font-size: 0.8rem;
+  color: #ffd700;
+  font-weight: bold;
 }
 
 .player-info {
   display: flex;
-  gap: 15px;
-  align-items: center;
-  flex-wrap: wrap;
+  flex-direction: column;
+  gap: 4px;
 }
 
 .player-info span {
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 15px;
-  padding: 4px 8px;
-  font-size: 0.8rem;
-  font-weight: bold;
-  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 
 @media (max-width: 768px) {
-  .game-canvas-container {
-    bottom: 160px;
-  }
-  
   .canvas-controls {
-    flex-direction: column;
-    gap: 8px;
-    padding: 8px 10px;
-  }
-  
-  .control-hint {
     font-size: 0.7rem;
-  }
-  
-  .player-info {
-    gap: 8px;
-    flex-wrap: wrap;
-    justify-content: center;
-  }
-  
-  .player-info span {
-    font-size: 0.7rem;
-    padding: 2px 6px;
-  }
-  
-  .combat-animation {
-    font-size: 2rem;
-  }
-  
-  .canvas-loading {
-    padding: 20px;
+    padding: 8px;
+    max-width: 250px;
   }
 }

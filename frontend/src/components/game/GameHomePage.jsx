@@ -1,5 +1,5 @@
 // src/components/game/GameHomePage.jsx
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import "./GameHomePage.css";
 import TopNavigation from "./TopNavigation";
 import LeftNavigation from "./LeftNavigation";
@@ -21,6 +21,7 @@ function GameHomePage({ user, token, onLogout }) {
   const [showModal, setShowModal] = useState(null);
   const [modalData, setModalData] = useState(null);
   const [loading, setLoading] = useState(false);
+  const fightCooldownRef = useRef(0);
 
   useEffect(() => {
     setGameUser(user);
@@ -46,10 +47,17 @@ function GameHomePage({ user, token, onLogout }) {
     }
   };
 
-  const handleFightEnemy = async (enemyType, positionX, positionY) => {
-    if (gameUser.buns < gameUser.xMultiplier) {
-      alert("包子不足！");
+  const handleFightEnemy = async (enemyType, posX, posY) => {
+    // Check if user has enough buns
+    if (user.buns <= 0) {
+      alert("包子不足，无法战斗！");
       return;
+    }
+
+    // Add cooldown check (if you want to track it globally)
+    const now = Date.now();
+    if (fightCooldownRef.current && now - fightCooldownRef.current < 1000) {
+      return; // Still in cooldown
     }
 
     setLoading(true);
@@ -64,18 +72,27 @@ function GameHomePage({ user, token, onLogout }) {
           },
           body: JSON.stringify({
             enemyType,
-            positionX,
-            positionY,
+            positionX: posX,
+            positionY: posY,
           }),
         }
       );
 
       const data = await response.json();
       if (data.success) {
-        setGameUser(data.user);
-        handleLootDrops(data.droppedItems);
+        // Set cooldown
+        fightCooldownRef.current = now;
+
+        // Update user state
+        await fetchUserData();
+
+        // Show loot results if any
+        if (data.lootResults && data.lootResults.length > 0) {
+          setLootResults(data.lootResults);
+          setShowLootModal(true);
+        }
       } else {
-        alert(data.message);
+        alert(data.message || "战斗失败");
       }
     } catch (error) {
       console.error("Fight failed:", error);
