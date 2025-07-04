@@ -69,7 +69,7 @@
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 20px;
   padding: 2rem;
-  max-width: 600px;
+  max-width: 800px;
   width: 100%;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
 }
@@ -149,7 +149,7 @@
 
 .profession-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 1rem;
 }
 
@@ -225,7 +225,7 @@
 
 @media (max-width: 768px) {
   .profession-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
   }
   
   .selection-title {
@@ -234,5 +234,11 @@
   
   .selection-form {
     padding: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .profession-grid {
+    grid-template-columns: 1fr;
   }
 }

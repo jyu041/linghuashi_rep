@@ -27,8 +27,9 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authz -> authz
                         .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/api/game/**").permitAll()
+                        .requestMatchers("/api/admin/**").permitAll()
                         .requestMatchers("/ws-game/**").permitAll()
-                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 );
 

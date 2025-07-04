@@ -4,17 +4,27 @@ import "./GameCanvas.css";
 
 function GameCanvas({ user, onFightEnemy, loading }) {
   const canvasRef = useRef(null);
-  const [playerPosition, setPlayerPosition] = useState({ x: 400, y: 300 });
+  const animationRef = useRef(null);
+  const [playerPosition, setPlayerPosition] = useState({ x: 600, y: 400 });
+  const [targetPosition, setTargetPosition] = useState({ x: 600, y: 400 });
+  const [isMoving, setIsMoving] = useState(false);
+  const [camera, setCamera] = useState({ x: 200, y: 100 });
   const [enemies, setEnemies] = useState([]);
-  const [mapSize] = useState({ width: 1200, height: 800 });
+
+  // Map size and canvas view
+  const mapSize = { width: 2400, height: 1600 }; // Larger world
+  const canvasSize = { width: 800, height: 600 }; // Viewport size
+  const playerSpeed = 2; // pixels per frame
 
   useEffect(() => {
     generateEnemies();
+    startGameLoop();
+    return () => {
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+      }
+    };
   }, []);
-
-  useEffect(() => {
-    drawCanvas();
-  }, [playerPosition, enemies]);
 
   const generateEnemies = () => {
     const enemyTypes = [
@@ -26,7 +36,7 @@ function GameCanvas({ user, onFightEnemy, loading }) {
     ];
 
     const newEnemies = [];
-    for (let i = 0; i < 15; i++) {
+    for (let i = 0; i < 30; i++) {
       const enemyType =
         enemyTypes[Math.floor(Math.random() * enemyTypes.length)];
       newEnemies.push({
@@ -40,52 +50,123 @@ function GameCanvas({ user, onFightEnemy, loading }) {
     setEnemies(newEnemies);
   };
 
+  const startGameLoop = () => {
+    const gameLoop = () => {
+      updatePlayerMovement();
+      updateCamera();
+      drawCanvas();
+      animationRef.current = requestAnimationFrame(gameLoop);
+    };
+    gameLoop();
+  };
+
+  const updatePlayerMovement = () => {
+    if (!isMoving) return;
+
+    const dx = targetPosition.x - playerPosition.x;
+    const dy = targetPosition.y - playerPosition.y;
+    const distance = Math.sqrt(dx * dx + dy * dy);
+
+    if (distance < playerSpeed) {
+      setPlayerPosition(targetPosition);
+      setIsMoving(false);
+    } else {
+      const moveX = (dx / distance) * playerSpeed;
+      const moveY = (dy / distance) * playerSpeed;
+      setPlayerPosition((prev) => ({
+        x: prev.x + moveX,
+        y: prev.y + moveY,
+      }));
+    }
+  };
+
+  const updateCamera = () => {
+    // Center camera on player with bounds checking
+    const newCameraX = Math.max(
+      0,
+      Math.min(
+        mapSize.width - canvasSize.width,
+        playerPosition.x - canvasSize.width / 2
+      )
+    );
+    const newCameraY = Math.max(
+      0,
+      Math.min(
+        mapSize.height - canvasSize.height,
+        playerPosition.y - canvasSize.height / 2
+      )
+    );
+
+    setCamera({ x: newCameraX, y: newCameraY });
+  };
+
   const drawCanvas = () => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
     const ctx = canvas.getContext("2d");
-
-    // Clear canvas
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+    // Save context for camera transformation
+    ctx.save();
+    ctx.translate(-camera.x, -camera.y);
+
     // Draw background
-    drawBackground(ctx, canvas.width, canvas.height);
+    drawBackground(ctx);
 
     // Draw enemies
     enemies.forEach((enemy) => {
-      drawEnemy(ctx, enemy);
+      if (isInViewport(enemy.x, enemy.y)) {
+        drawEnemy(ctx, enemy);
+      }
     });
 
     // Draw player
     drawPlayer(ctx);
+
+    // Restore context
+    ctx.restore();
   };
 
-  const drawBackground = (ctx, width, height) => {
-    // Create gradient background
-    const gradient = ctx.createLinearGradient(0, 0, 0, height);
+  const isInViewport = (x, y) => {
+    return (
+      x >= camera.x - 50 &&
+      x <= camera.x + canvasSize.width + 50 &&
+      y >= camera.y - 50 &&
+      y <= camera.y + canvasSize.height + 50
+    );
+  };
+
+  const drawBackground = (ctx) => {
+    // Draw world background
+    const gradient = ctx.createLinearGradient(0, 0, 0, mapSize.height);
     gradient.addColorStop(0, "#2c3e50");
     gradient.addColorStop(0.5, "#34495e");
     gradient.addColorStop(1, "#2c3e50");
 
     ctx.fillStyle = gradient;
-    ctx.fillRect(0, 0, width, height);
+    ctx.fillRect(0, 0, mapSize.width, mapSize.height);
 
-    // Draw grid pattern
+    // Draw grid pattern only in viewport area
     ctx.strokeStyle = "rgba(255, 255, 255, 0.1)";
     ctx.lineWidth = 1;
 
-    for (let x = 0; x < width; x += 50) {
+    const startX = Math.floor(camera.x / 50) * 50;
+    const endX = Math.ceil((camera.x + canvasSize.width) / 50) * 50;
+    const startY = Math.floor(camera.y / 50) * 50;
+    const endY = Math.ceil((camera.y + canvasSize.height) / 50) * 50;
+
+    for (let x = startX; x <= endX; x += 50) {
       ctx.beginPath();
-      ctx.moveTo(x, 0);
-      ctx.lineTo(x, height);
+      ctx.moveTo(x, camera.y);
+      ctx.lineTo(x, camera.y + canvasSize.height);
       ctx.stroke();
     }
 
-    for (let y = 0; y < height; y += 50) {
+    for (let y = startY; y <= endY; y += 50) {
       ctx.beginPath();
-      ctx.moveTo(0, y);
-      ctx.lineTo(width, y);
+      ctx.moveTo(camera.x, y);
+      ctx.lineTo(camera.x + canvasSize.width, y);
       ctx.stroke();
     }
   };
@@ -120,6 +201,18 @@ function GameCanvas({ user, onFightEnemy, loading }) {
     ctx.fillStyle = "#ffd700";
     ctx.font = "10px Arial";
     ctx.fillText(`Lv.${user.level}`, playerPosition.x, playerPosition.y + 35);
+
+    // Draw movement indicator if moving
+    if (isMoving) {
+      ctx.strokeStyle = "#00ff00";
+      ctx.lineWidth = 2;
+      ctx.setLineDash([5, 5]);
+      ctx.beginPath();
+      ctx.moveTo(playerPosition.x, playerPosition.y);
+      ctx.lineTo(targetPosition.x, targetPosition.y);
+      ctx.stroke();
+      ctx.setLineDash([]);
+    }
   };
 
   const drawEnemy = (ctx, enemy) => {
@@ -156,13 +249,17 @@ function GameCanvas({ user, onFightEnemy, loading }) {
     const scaleX = canvas.width / rect.width;
     const scaleY = canvas.height / rect.height;
 
-    const clickX = (event.clientX - rect.left) * scaleX;
-    const clickY = (event.clientY - rect.top) * scaleY;
+    const canvasX = (event.clientX - rect.left) * scaleX;
+    const canvasY = (event.clientY - rect.top) * scaleY;
+
+    // Convert canvas coordinates to world coordinates
+    const worldX = canvasX + camera.x;
+    const worldY = canvasY + camera.y;
 
     // Check if clicked on an enemy
     const clickedEnemy = enemies.find((enemy) => {
       const distance = Math.sqrt(
-        Math.pow(clickX - enemy.x, 2) + Math.pow(clickY - enemy.y, 2)
+        Math.pow(worldX - enemy.x, 2) + Math.pow(worldY - enemy.y, 2)
       );
       return distance <= 15;
     });
@@ -185,8 +282,12 @@ function GameCanvas({ user, onFightEnemy, loading }) {
         setEnemies((prev) => [...prev, newEnemy]);
       }, 3000);
     } else {
-      // Move player
-      setPlayerPosition({ x: clickX, y: clickY });
+      // Set movement target within map bounds
+      const clampedX = Math.max(20, Math.min(mapSize.width - 20, worldX));
+      const clampedY = Math.max(20, Math.min(mapSize.height - 20, worldY));
+
+      setTargetPosition({ x: clampedX, y: clampedY });
+      setIsMoving(true);
     }
   };
 
@@ -194,8 +295,8 @@ function GameCanvas({ user, onFightEnemy, loading }) {
     <div className="game-canvas-container">
       <canvas
         ref={canvasRef}
-        width={mapSize.width}
-        height={mapSize.height}
+        width={canvasSize.width}
+        height={canvasSize.height}
         onClick={handleCanvasClick}
         className="game-canvas"
       />
@@ -209,12 +310,38 @@ function GameCanvas({ user, onFightEnemy, loading }) {
 
       <div className="canvas-controls">
         <div className="control-hint">
-          <span>💡 点击空地移动，点击怪物战斗</span>
+          <span>💡 点击移动，点击怪物战斗</span>
         </div>
         <div className="player-info">
           <span>🥟 包子: {user.buns}</span>
           <span>⚡ {user.xMultiplier}倍速</span>
           <span>📊 掉落等级: {user.lootDropLevel}</span>
+          <span>
+            🗺️ 位置: ({Math.floor(playerPosition.x)},{" "}
+            {Math.floor(playerPosition.y)})
+          </span>
+        </div>
+      </div>
+
+      {/* Mini-map */}
+      <div className="mini-map">
+        <div className="mini-map-content">
+          <div
+            className="mini-map-player"
+            style={{
+              left: `${(playerPosition.x / mapSize.width) * 100}%`,
+              top: `${(playerPosition.y / mapSize.height) * 100}%`,
+            }}
+          />
+          <div
+            className="mini-map-viewport"
+            style={{
+              left: `${(camera.x / mapSize.width) * 100}%`,
+              top: `${(camera.y / mapSize.height) * 100}%`,
+              width: `${(canvasSize.width / mapSize.width) * 100}%`,
+              height: `${(canvasSize.height / mapSize.height) * 100}%`,
+            }}
+          />
         </div>
       </div>
     </div>

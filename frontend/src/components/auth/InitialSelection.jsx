@@ -10,10 +10,12 @@ function InitialSelection({ token, onComplete }) {
   const [error, setError] = useState("");
 
   const professions = [
-    { id: "warrior", name: "战士", description: "近战物理攻击专家" },
-    { id: "mage", name: "法师", description: "远程法术攻击专家" },
-    { id: "assassin", name: "刺客", description: "高速度高暴击专家" },
-    { id: "healer", name: "治疗师", description: "支援和恢复专家" },
+    { id: "体修", name: "体修", description: "强化肉身，追求力量极限" },
+    { id: "道修", name: "道修", description: "感悟天道，掌控自然法则" },
+    { id: "法修", name: "法修", description: "钻研法术，操控元素能量" },
+    { id: "妖修", name: "妖修", description: "化形修炼，兽性与人性并存" },
+    { id: "气修", name: "气修", description: "炼气修真，追求长生不老" },
+    { id: "禅修", name: "禅修", description: "静心悟道，心境澄明如水" },
   ];
 
   const genders = [
@@ -111,7 +113,7 @@ function InitialSelection({ token, onComplete }) {
 
           {/* Profession Selection */}
           <div className="form-section">
-            <h3>职业</h3>
+            <h3>修炼流派</h3>
             <div className="profession-grid">
               {professions.map((prof) => (
                 <button

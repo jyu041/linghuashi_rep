@@ -4,7 +4,7 @@
   top: 80px;
   left: 150px;
   right: 150px;
-  bottom: 200px;
+  bottom: 160px; /* Changed from 200px to 160px */
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -88,6 +88,7 @@
   display: flex;
   gap: 15px;
   align-items: center;
+  flex-wrap: wrap;
 }
 
 .player-info span {
@@ -97,12 +98,55 @@
   padding: 4px 8px;
   font-size: 0.8rem;
   font-weight: bold;
+  white-space: nowrap;
+}
+
+/* Mini-map */
+.mini-map {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  width: 150px;
+  height: 100px;
+  background: rgba(0, 0, 0, 0.8);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 8px;
+  overflow: hidden;
+  z-index: 55;
+}
+
+.mini-map-content {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: rgba(44, 62, 80, 0.8);
+}
+
+.mini-map-player {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  background: #ffd700;
+  border: 1px solid #ff6b6b;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 3;
+}
+
+.mini-map-viewport {
+  position: absolute;
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  background: rgba(255, 255, 255, 0.1);
+  transform: translate(0, 0);
+  pointer-events: none;
+  z-index: 2;
 }
 
 @media (max-width: 768px) {
   .game-canvas-container {
     left: 80px;
     right: 80px;
+    bottom: 140px; /* Adjusted for mobile */
   }
   
   .canvas-controls {
@@ -132,5 +176,17 @@
   
   .canvas-loading {
     padding: 20px;
+  }
+  
+  .mini-map {
+    width: 120px;
+    height: 80px;
+    top: 10px;
+    right: 10px;
+  }
+  
+  .mini-map-player {
+    width: 4px;
+    height: 4px;
   }
 }
