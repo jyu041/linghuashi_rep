@@ -6,24 +6,58 @@ import {
   getTierDisplayName,
 } from "../../../utils/tierColors";
 
-function LootModal({ items, onClose, onEquip, onCompare }) {
+function LootModal({ items, onClose, onEquip, onCompare, user }) {
   const [selectedItems, setSelectedItems] = useState([]);
 
-  const handleItemSelect = (item) => {
-    if (selectedItems.includes(item)) {
-      setSelectedItems(selectedItems.filter((i) => i !== item));
-    } else if (selectedItems.length < 2) {
-      setSelectedItems([...selectedItems, item]);
-    }
+  // Equipment type to icon mapping
+  const getEquipmentIcon = (type) => {
+    const iconMap = {
+      武器: "⚔️",
+      头部: "🎩",
+      身体: "👕",
+      脚部: "👢",
+      腰部: "👔",
+      护臂: "🛡️",
+      戒指: "💍",
+      手部: "🧤",
+      腿部: "👖",
+      项链: "📿",
+      护身符: "🔮",
+      暗器: "🗡️",
+    };
+    return iconMap[type] || "⚡";
   };
 
-  const handleCompare = () => {
-    if (selectedItems.length === 2) {
-      onCompare(selectedItems);
-    }
+  // Calculate total power rating of an item
+  const calculateItemPower = (item) => {
+    let power = 0;
+    if (item.healthBonus) power += item.healthBonus * 0.5;
+    if (item.attackBonus) power += item.attackBonus * 2;
+    if (item.defenseBonus) power += item.defenseBonus * 1.5;
+    if (item.speedBonus) power += item.speedBonus * 1;
+    if (item.powerRatingBonus) power += item.powerRatingBonus;
+    return Math.floor(power);
   };
 
-  const handleEquip = (item) => {
+  // Check if new item is better than currently equipped item
+  const isItemUpgrade = (newItem) => {
+    if (!user?.equippedItems) return false;
+
+    const currentItem = user.equippedItems[newItem.type];
+    if (!currentItem) return true; // No item equipped, so any item is an upgrade
+
+    const newPower = calculateItemPower(newItem);
+    const currentPower = calculateItemPower(currentItem);
+    return newPower > currentPower;
+  };
+
+  const handleItemClick = (item) => {
+    // Single click opens comparison modal
+    onCompare([item, user?.equippedItems?.[item.type]].filter(Boolean));
+  };
+
+  const handleEquip = (item, event) => {
+    event.stopPropagation();
     onEquip(item);
     onClose();
   };
@@ -44,88 +78,59 @@ function LootModal({ items, onClose, onEquip, onCompare }) {
     <div className={styles.lootModal}>
       <div className={styles.modalHeader}>
         <h3 className={styles.modalTitle}>战利品 ({items.length}件)</h3>
-        <div className={styles.headerActions}>
-          {selectedItems.length === 2 && (
-            <button className={styles.compareButton} onClick={handleCompare}>
-              对比装备
-            </button>
-          )}
-          <button className={styles.closeButton} onClick={onClose}>
-            关闭
-          </button>
-        </div>
+        <button className={styles.closeButton} onClick={onClose}>
+          ✕
+        </button>
       </div>
 
       <div className={styles.itemsGrid}>
         {items.map((item, index) => (
           <div
             key={index}
-            className={`${styles.lootItem} ${
-              selectedItems.includes(item) ? styles.selected : ""
-            }`}
-            onClick={() => handleItemSelect(item)}
+            className={styles.lootItemBox}
+            onClick={() => handleItemClick(item)}
           >
+            {/* Tier background with gradient support */}
             <div
-              className={styles.itemTier}
+              className={styles.tierBackground}
               style={getTierBackgroundStyle(item.tier)}
             >
-              {getTierDisplayName(item.tier)}
-            </div>
-
-            <div className={styles.itemInfo}>
-              <h4 className={styles.itemName}>{item.name}</h4>
-              <div className={styles.itemType}>{item.type}</div>
-
-              {item.stats && (
-                <div className={styles.itemStats}>
-                  {Object.entries(item.stats).map(([stat, value]) => (
-                    <div key={stat} className={styles.statLine}>
-                      <span className={styles.statName}>{stat}</span>
-                      <span className={styles.statValue}>+{value}</span>
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              {item.specialEffects && item.specialEffects.length > 0 && (
-                <div className={styles.specialEffects}>
-                  {item.specialEffects.map((effect, effectIndex) => (
-                    <div key={effectIndex} className={styles.specialEffect}>
-                      {effect}
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            <div className={styles.itemActions}>
-              <button
-                className={styles.equipButton}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleEquip(item);
-                }}
-              >
-                装备
-              </button>
-              <div className={styles.levelRequirement}>
-                需要等级: {item.levelRequirement || 1}
+              {/* Tier name in background */}
+              <div className={styles.tierNameBackground}>
+                {getTierDisplayName(item.tier)}
               </div>
             </div>
 
-            {selectedItems.includes(item) && (
-              <div className={styles.selectedIndicator}>已选择</div>
+            {/* Item name above icon */}
+            <div className={styles.itemName}>{item.name}</div>
+
+            {/* Large equipment icon */}
+            <div className={styles.equipmentIcon}>
+              {getEquipmentIcon(item.type)}
+            </div>
+
+            {/* Power upgrade indicator */}
+            {isItemUpgrade(item) && (
+              <div className={styles.upgradeIndicator}>
+                <span className={styles.upgradeArrow}>↗️</span>
+              </div>
             )}
+
+            {/* Quick equip button */}
+            <button
+              className={styles.quickEquipBtn}
+              onClick={(e) => handleEquip(item, e)}
+              title="快速装备"
+            >
+              装备
+            </button>
           </div>
         ))}
       </div>
 
       <div className={styles.modalFooter}>
         <div className={styles.instructions}>
-          点击装备进行选择，选择2件装备可进行对比
-        </div>
-        <div className={styles.selectionCount}>
-          已选择: {selectedItems.length}/2
+          点击物品查看详细对比 • 绿色箭头表示战力提升
         </div>
       </div>
     </div>

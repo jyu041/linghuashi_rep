@@ -1,13 +1,13 @@
-/* src/components/game/TopNavigation.css */
-.top-navigation {
+/* src/components/game/TopNavigation.module.css */
+.topNavigation {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   height: 80px;
-  background: transparent; /* Completely transparent */
-  backdrop-filter: none; /* Remove blur */
-  border: none; /* Remove border */
+  background: rgba(20, 20, 30, 0.8);
+  backdrop-filter: blur(15px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
   display: flex;
   align-items: center;
   padding: 0 20px;
@@ -15,13 +15,13 @@
   box-sizing: border-box;
 }
 
-.profile-section {
+.profileSection {
   width: 20%;
   display: flex;
   align-items: center;
 }
 
-.profile-avatar {
+.profileAvatar {
   width: 50px;
   height: 50px;
   border-radius: 50%;
@@ -35,28 +35,28 @@
   box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
 }
 
-.main-info-section {
+.mainInfoSection {
   width: 80%;
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
 
-.info-row-1 {
+.infoRow1 {
   display: flex;
   align-items: center;
   justify-content: space-between;
   height: 30px;
 }
 
-.display-name {
+.displayName {
   color: white;
   font-size: 1.2rem;
   font-weight: bold;
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
 }
 
-.power-rating {
+.powerRating {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -66,23 +66,23 @@
   border: 1px solid rgba(255, 215, 0, 0.5);
 }
 
-.power-label {
+.powerLabel {
   color: #ffd700;
   font-size: 0.9rem;
 }
 
-.power-value {
+.powerValue {
   color: white;
   font-weight: bold;
   font-size: 1rem;
 }
 
-.p2w-icons {
+.p2wIcons {
   display: flex;
   gap: 8px;
 }
 
-.p2w-icon {
+.p2wIcon {
   width: 30px;
   height: 30px;
   background: rgba(138, 43, 226, 0.3);
@@ -96,19 +96,19 @@
   transition: all 0.3s ease;
 }
 
-.p2w-icon:hover {
+.p2wIcon:hover {
   background: rgba(138, 43, 226, 0.5);
   transform: scale(1.1);
 }
 
-.info-row-2 {
+.infoRow2 {
   display: flex;
   align-items: center;
   gap: 20px;
   height: 30px;
 }
 
-.currency-item {
+.currencyItem {
   display: flex;
   align-items: center;
   gap: 6px;
@@ -118,11 +118,11 @@
   border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
-.currency-icon {
+.currencyIcon {
   font-size: 1rem;
 }
 
-.currency-amount {
+.currencyValue {
   color: white;
   font-weight: bold;
   font-size: 0.9rem;
@@ -130,7 +130,7 @@
   text-align: right;
 }
 
-.currency-plus {
+.currencyPlus {
   background: rgba(255, 215, 0, 0.3);
   border: 1px solid rgba(255, 215, 0, 0.6);
   border-radius: 50%;
@@ -146,36 +146,36 @@
   transition: all 0.3s ease;
 }
 
-.currency-plus:hover {
+.currencyPlus:hover {
   background: rgba(255, 215, 0, 0.5);
   transform: scale(1.1);
 }
 
 @media (max-width: 768px) {
-  .top-navigation {
+  .topNavigation {
     padding: 0 10px;
     height: 70px;
   }
   
-  .profile-avatar {
+  .profileAvatar {
     width: 40px;
     height: 40px;
     font-size: 1.2rem;
   }
   
-  .display-name {
+  .displayName {
     font-size: 1rem;
   }
   
-  .info-row-2 {
+  .infoRow2 {
     gap: 10px;
   }
   
-  .currency-item {
+  .currencyItem {
     padding: 2px 8px;
   }
   
-  .currency-amount {
+  .currencyValue {
     font-size: 0.8rem;
     min-width: 30px;
   }

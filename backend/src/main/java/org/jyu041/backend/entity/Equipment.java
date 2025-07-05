@@ -45,65 +45,65 @@ public class Equipment {
             case "王品": return "#FFA500";
             case "圣品": return "#FF0000";
             case "帝品": return "#FFC0CB";
-            case "帝品.精": return "linear-gradient(45deg, #800080, #0000FF)";
-            case "帝品.珍": return "linear-gradient(45deg, #006400, #90EE90)";
-            case "帝品.极": return "linear-gradient(45deg, #00008B, #ADD8E6)";
-            case "帝品.绝": return "linear-gradient(45deg, #4B0082, #DDA0DD)";
-            case "仙品.精": return "linear-gradient(45deg, #B8860B, #FFD700)";
-            case "仙品.极": return "linear-gradient(45deg, #8B0000, #FFB6C1)";
+            case "帝品.精": return "linear-gradient(to right, #800080 0%, #0000FF 100%)";
+            case "帝品.珍": return "linear-gradient(to right, #228B22 0%, #90EE90 100%)";
+            case "帝品.极": return "linear-gradient(to right, #191970 0%, #87CEEB 100%)";
+            case "帝品.绝": return "linear-gradient(to right, #4B0082 0%, #DDA0DD 100%)";
+            case "仙品.精": return "linear-gradient(to right, #B8860B 0%, #FFD700 100%)";
+            case "仙品.极": return "linear-gradient(to right, #8B0000 0%, #FFB6B6 100%)";
             default: return "#808080";
         }
     }
 
     private int calculateSellValue(String tier, int level) {
         int baseValue = switch (tier) {
-            case "凡品" -> 10;
-            case "良品" -> 25;
-            case "上品" -> 50;
-            case "极品" -> 100;
-            case "灵品" -> 200;
+            case "凡品" -> 1;
+            case "良品" -> 5;
+            case "上品" -> 15;
+            case "极品" -> 50;
+            case "灵品" -> 150;
             case "王品" -> 500;
-            case "圣品" -> 1000;
-            case "帝品" -> 2000;
-            case "帝品.精" -> 5000;
-            case "帝品.珍" -> 8000;
-            case "帝品.极" -> 12000;
-            case "帝品.绝" -> 20000;
-            case "仙品.精" -> 35000;
-            case "仙品.极" -> 50000;
-            default -> 10;
+            case "圣品" -> 1500;
+            case "帝品" -> 5000;
+            case "帝品.精" -> 15000;
+            case "帝品.珍" -> 50000;
+            case "帝品.极" -> 150000;
+            case "帝品.绝" -> 500000;
+            case "仙品.精" -> 1500000;
+            case "仙品.极" -> 5000000;
+            default -> 1;
         };
-        return baseValue + (level * 5);
+        return baseValue * level;
     }
 
     private void generateRandomStats(String tier, int level) {
-        double multiplier = switch (tier) {
-            case "凡品" -> 1.0;
-            case "良品" -> 1.5;
-            case "上品" -> 2.0;
-            case "极品" -> 3.0;
-            case "灵品" -> 4.0;
-            case "王品" -> 6.0;
-            case "圣品" -> 8.0;
-            case "帝品" -> 12.0;
-            case "帝品.精" -> 18.0;
-            case "帝品.珍" -> 25.0;
-            case "帝品.极" -> 35.0;
-            case "帝品.绝" -> 50.0;
-            case "仙品.精" -> 75.0;
-            case "仙品.极" -> 100.0;
-            default -> 1.0;
+        int tierMultiplier = switch (tier) {
+            case "凡品" -> 1;
+            case "良品" -> 2;
+            case "上品" -> 4;
+            case "极品" -> 8;
+            case "灵品" -> 16;
+            case "王品" -> 32;
+            case "圣品" -> 64;
+            case "帝品" -> 128;
+            case "帝品.精" -> 256;
+            case "帝品.珍" -> 512;
+            case "帝品.极" -> 1024;
+            case "帝品.绝" -> 2048;
+            case "仙品.精" -> 4096;
+            case "仙品.极" -> 8192;
+            default -> 1;
         };
 
-        int baseValue = (int) (level * multiplier);
-        this.healthBonus = (int) (baseValue * (0.8 + Math.random() * 0.4));
-        this.attackBonus = (int) (baseValue * (0.8 + Math.random() * 0.4));
-        this.defenseBonus = (int) (baseValue * (0.8 + Math.random() * 0.4));
-        this.speedBonus = (int) (baseValue * (0.8 + Math.random() * 0.4));
-        this.powerRatingBonus = this.healthBonus + this.attackBonus + this.defenseBonus + this.speedBonus;
+        // Generate random stats based on tier and level
+        this.healthBonus = (int) (Math.random() * 10 * tierMultiplier * level / 5);
+        this.attackBonus = (int) (Math.random() * 5 * tierMultiplier * level / 5);
+        this.defenseBonus = (int) (Math.random() * 5 * tierMultiplier * level / 5);
+        this.speedBonus = (int) (Math.random() * 3 * tierMultiplier * level / 5);
+        this.powerRatingBonus = (int) (Math.random() * 20 * tierMultiplier * level / 5);
     }
 
-    // Getters and Setters
+    // Getters and setters
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
 

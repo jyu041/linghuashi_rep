@@ -17,22 +17,61 @@ function App() {
   const [token, setToken] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    // Check for existing authentication
-    const storedToken = localStorage.getItem("authToken");
-    const storedUser = localStorage.getItem("user");
+  // Function to validate token with backend
+  const validateToken = async (storedToken) => {
+    try {
+      const response = await fetch("http://localhost:8080/api/auth/validate", {
+        headers: {
+          Authorization: `Bearer ${storedToken}`,
+        },
+      });
 
-    if (storedToken && storedUser) {
-      try {
-        setToken(storedToken);
-        setUser(JSON.parse(storedUser));
-      } catch (error) {
-        console.error("Error parsing stored user data:", error);
-        localStorage.removeItem("authToken");
-        localStorage.removeItem("user");
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success) {
+          return data.user;
+        }
       }
+      return null;
+    } catch (error) {
+      console.error("Token validation failed:", error);
+      return null;
     }
-    setLoading(false);
+  };
+
+  useEffect(() => {
+    const checkAuthentication = async () => {
+      // Check for existing authentication
+      const storedToken = localStorage.getItem("authToken");
+      const storedUser = localStorage.getItem("user");
+
+      if (storedToken && storedUser) {
+        try {
+          // Validate token with backend
+          const validUser = await validateToken(storedToken);
+
+          if (validUser) {
+            // Token is still valid
+            setToken(storedToken);
+            setUser(validUser);
+            // Update localStorage with fresh user data
+            localStorage.setItem("user", JSON.stringify(validUser));
+          } else {
+            // Token expired or invalid, clear storage
+            console.log("Token invalid or expired, clearing authentication");
+            localStorage.removeItem("authToken");
+            localStorage.removeItem("user");
+          }
+        } catch (error) {
+          console.error("Error validating authentication:", error);
+          localStorage.removeItem("authToken");
+          localStorage.removeItem("user");
+        }
+      }
+      setLoading(false);
+    };
+
+    checkAuthentication();
   }, []);
 
   const handleLogin = (userData, authToken) => {
@@ -52,6 +91,12 @@ function App() {
   const handleInitialSelectionComplete = (updatedUser) => {
     setUser(updatedUser);
     localStorage.setItem("user", JSON.stringify(updatedUser));
+  };
+
+  // Function to handle token expiry during gameplay
+  const handleTokenError = () => {
+    console.log("Token error detected, logging out");
+    handleLogout();
   };
 
   if (loading) {
@@ -92,6 +137,7 @@ function App() {
                   user={user}
                   token={token}
                   onComplete={handleInitialSelectionComplete}
+                  onTokenError={handleTokenError}
                 />
               ) : user ? (
                 <Navigate to="/game" replace />
@@ -110,6 +156,7 @@ function App() {
                   user={user}
                   token={token}
                   onLogout={handleLogout}
+                  onTokenError={handleTokenError}
                 />
               ) : user ? (
                 <Navigate to="/initial-selection" replace />
@@ -124,7 +171,12 @@ function App() {
             path="/admin"
             element={
               user && user.role === "admin" ? (
-                <AdminPage user={user} token={token} onLogout={handleLogout} />
+                <AdminPage
+                  user={user}
+                  token={token}
+                  onLogout={handleLogout}
+                  onTokenError={handleTokenError}
+                />
               ) : (
                 <Navigate to="/login" replace />
               )

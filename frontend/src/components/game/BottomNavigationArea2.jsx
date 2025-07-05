@@ -53,7 +53,8 @@ function BottomNavigationArea2({
 
           <div className={styles.mainFightBtn} onClick={handleMainFightClick}>
             <div className={styles.multiplierDisplay}>
-              {user.xMultiplier || 1}倍
+              {user.xMultiplier && user.xMultiplier > 0 ? user.xMultiplier : 1}
+              倍
             </div>
             <div className={styles.fightIcon}>⚔️</div>
             <div className={styles.bunsDisplay}>

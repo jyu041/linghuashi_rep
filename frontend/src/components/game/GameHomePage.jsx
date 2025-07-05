@@ -42,7 +42,17 @@ function GameHomePage({ user, token, onLogout }) {
 
       if (response.ok) {
         const data = await response.json();
-        setGameUser(data.user);
+        if (data.success) {
+          setGameUser(data.user);
+        } else if (data.message && data.message.includes("token")) {
+          console.log("Token error in updateUserData, calling onTokenError");
+          onTokenError && onTokenError();
+        }
+      } else if (response.status === 401 || response.status === 403) {
+        console.log(
+          "Authentication error in updateUserData, calling onTokenError"
+        );
+        onTokenError && onTokenError();
       }
     } catch (error) {
       console.error("Failed to update user data:", error);
@@ -76,8 +86,8 @@ function GameHomePage({ user, token, onLogout }) {
           },
           body: JSON.stringify({
             enemyType: enemyType,
-            posX: posX,
-            posY: posY,
+            positionX: posX,
+            positionY: posY,
           }),
         }
       );
@@ -89,23 +99,44 @@ function GameHomePage({ user, token, onLogout }) {
       const data = await response.json();
 
       if (data.success) {
-        // Update user data
+        // Update user stats
         setGameUser(data.user);
 
-        // Handle dropped loot
+        // Show loot modal if items dropped
         if (data.droppedItems && data.droppedItems.length > 0) {
           setDroppedLoot(data.droppedItems);
           setModalData({ items: data.droppedItems });
           setShowModal("loot");
         }
 
+        // Show special messages
+        if (data.specialMessage) {
+          alert(data.specialMessage);
+        }
+
         return data;
       } else {
+        // Check if it's a token error
+        if (data.message && data.message.includes("token")) {
+          console.log("Token error detected, calling onTokenError");
+          onTokenError && onTokenError();
+          return Promise.reject(
+            new Error("Authentication expired. Please login again.")
+          );
+        }
         throw new Error(data.message || "Fight failed");
       }
     } catch (error) {
-      console.error("Fight failed:", error);
-      alert("战斗失败：" + error.message);
+      console.error("Fight error:", error);
+
+      // Check if it's a network error with authentication issues
+      if (error.message.includes("401") || error.message.includes("403")) {
+        console.log("Authentication error detected, calling onTokenError");
+        onTokenError && onTokenError();
+        alert("认证已过期，请重新登录");
+      } else {
+        alert(`战斗失败：${error.message}`);
+      }
       throw error;
     } finally {
       setLoading(false);
@@ -175,6 +206,7 @@ function GameHomePage({ user, token, onLogout }) {
         return (
           <LootModal
             items={modalData?.items || droppedLoot}
+            user={gameUser} // Add user prop here
             onClose={closeModal}
             onEquip={(item) => console.log("Equip item:", item)}
             onCompare={(items) => {
