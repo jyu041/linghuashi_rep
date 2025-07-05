@@ -1,16 +1,16 @@
-/* src/components/game/modals/LootLevelModal.css */
-.loot-level-content {
+/* src/components/game/modals/LootLevelModal.module.css */
+.lootLevelContent {
   width: 100%;
 }
 
-.loot-tabs {
+.lootTabs {
   display: flex;
   gap: 0;
   margin-bottom: 20px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.2);
 }
 
-.tab-button {
+.tabButton {
   background: rgba(255, 255, 255, 0.1);
   border: none;
   border-bottom: 3px solid transparent;
@@ -22,76 +22,85 @@
   flex: 1;
 }
 
-.tab-button:hover {
+.tabButton:hover {
   background: rgba(255, 255, 255, 0.2);
   color: white;
 }
 
-.tab-button.active {
+.tabButton.active {
   background: rgba(255, 215, 0, 0.2);
   border-bottom-color: #ffd700;
   color: white;
 }
 
-.current-level-section, 
-.next-level-section, 
-.current-multiplier-section, 
-.next-multiplier-section,
-.upgrade-requirements {
+.currentLevelSection, 
+.nextLevelSection, 
+.currentMultiplierSection, 
+.nextMultiplierSection,
+.upgradeRequirements {
   margin-bottom: 20px;
   padding: 15px;
   background: rgba(255, 255, 255, 0.1);
   border-radius: 10px;
 }
 
-.current-level-section h4,
-.current-multiplier-section h4 {
+.currentLevelSection h4,
+.currentMultiplierSection h4 {
   color: #ffd700;
   margin-bottom: 10px;
   font-size: 1rem;
 }
 
-.next-level-section h4,
-.next-multiplier-section h4 {
+.nextLevelSection h4,
+.nextMultiplierSection h4 {
   color: #4CAF50;
   margin-bottom: 10px;
   font-size: 1rem;
 }
 
-.upgrade-requirements h4 {
+.upgradeRequirements h4 {
   color: #ff6b6b;
   margin-bottom: 10px;
   font-size: 1rem;
 }
 
-.drop-rates {
+.dropRates {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
   gap: 8px;
 }
 
-.rate-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 6px 10px;
-  background: rgba(0, 0, 0, 0.3);
-  border-radius: 6px;
+.rateItem {
   position: relative;
 }
 
-.tier-name {
+.tierBackground {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  border-radius: 6px;
+  position: relative;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  min-height: 32px;
+  box-sizing: border-box;
+}
+
+.tierName {
   font-weight: bold;
   font-size: 0.9rem;
+  color: #000;
+  text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.8);
 }
 
-.rate-value {
-  color: white;
+.rateValue {
+  color: #000;
   font-weight: bold;
   font-size: 0.8rem;
+  text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.8);
 }
 
-.new-tier {
+.newTier {
   position: absolute;
   top: -8px;
   right: -8px;
@@ -103,21 +112,7 @@
   font-weight: bold;
 }
 
-.upgrade-cost {
-  text-align: center;
-  margin-bottom: 20px;
-  padding: 10px;
-  background: rgba(255, 215, 0, 0.1);
-  border: 1px solid rgba(255, 215, 0, 0.3);
-  border-radius: 8px;
-}
-
-.upgrade-cost p {
-  margin: 4px 0;
-  font-weight: bold;
-}
-
-.requirement-item {
+.upgradeRequirements .requirementItem {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -125,32 +120,32 @@
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.requirement-item:last-child {
+.requirementItem:last-child {
   border-bottom: none;
 }
 
-.requirement-met {
+.requirementMet {
   color: #4CAF50;
   font-weight: bold;
 }
 
-.requirement-not-met {
+.requirementNotMet {
   color: #ff6b6b;
   font-weight: bold;
 }
 
-.current-multiplier-section p,
-.next-multiplier-section p {
+.currentMultiplierSection p,
+.nextMultiplierSection p {
   margin: 8px 0;
   color: rgba(255, 255, 255, 0.9);
 }
 
-.modal-buttons {
+.modalButtons {
   display: flex;
   gap: 10px;
 }
 
-.upgrade-btn, .cancel-btn {
+.upgradeBtn, .cancelBtn {
   flex: 1;
   padding: 12px;
   border: none;
@@ -160,43 +155,43 @@
   transition: all 0.3s ease;
 }
 
-.upgrade-btn {
+.upgradeBtn {
   background: linear-gradient(45deg, #4CAF50, #8BC34A);
   color: white;
 }
 
-.upgrade-btn:disabled {
+.upgradeBtn:disabled {
   background: rgba(100, 100, 100, 0.5);
   cursor: not-allowed;
 }
 
-.cancel-btn {
+.cancelBtn {
   background: rgba(255, 0, 0, 0.3);
   border: 1px solid rgba(255, 0, 0, 0.5);
   color: white;
 }
 
-.upgrade-btn:hover:not(:disabled), .cancel-btn:hover {
+.upgradeBtn:hover:not(:disabled), .cancelBtn:hover {
   transform: translateY(-1px);
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
 }
 
 @media (max-width: 768px) {
-  .tab-button {
+  .tabButton {
     padding: 10px 15px;
     font-size: 0.9rem;
   }
 
-  .drop-rates {
-    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  .dropRates {
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
     gap: 6px;
   }
   
-  .modal-buttons {
+  .modalButtons {
     flex-direction: column;
   }
 
-  .requirement-item {
+  .requirementItem {
     flex-direction: column;
     align-items: flex-start;
     gap: 4px;

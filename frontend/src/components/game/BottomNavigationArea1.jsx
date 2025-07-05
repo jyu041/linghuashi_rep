@@ -1,4 +1,5 @@
 // src/components/game/BottomNavigationArea1.jsx
+import styles from "./BottomNavigationArea1.module.css";
 
 function BottomNavigationArea1({ onModalOpen }) {
   const area1Buttons = [
@@ -19,17 +20,17 @@ function BottomNavigationArea1({ onModalOpen }) {
   ];
 
   return (
-    <div className="nav-area area-1">
-      <div className="function-grid">
+    <div className={`${styles.navArea} ${styles.area1}`}>
+      <div className={styles.functionGrid}>
         {area1Buttons.map((btn, index) => (
           <button
             key={btn.key}
-            className="function-btn"
+            className={styles.functionBtn}
             onClick={() => onModalOpen(btn.key)}
             title={btn.name}
           >
-            <span className="btn-icon">{btn.icon}</span>
-            <span className="btn-text">{btn.name}</span>
+            <span className={styles.btnIcon}>{btn.icon}</span>
+            <span className={styles.btnText}>{btn.name}</span>
           </button>
         ))}
       </div>

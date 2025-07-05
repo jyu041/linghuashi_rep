@@ -1,6 +1,6 @@
 // src/components/game/GameHomePage.jsx
 import { useState, useEffect, useRef } from "react";
-import "./GameHomePage.css";
+import styles from "./GameHomePage.module.css";
 import TopNavigation from "./TopNavigation";
 import LeftNavigation from "./LeftNavigation";
 import RightNavigation from "./RightNavigation";
@@ -14,6 +14,7 @@ import LootLevelModal from "./modals/LootLevelModal";
 import EquipmentDetailsModal from "./modals/EquipmentDetailsModal";
 import ItemCompareModal from "./modals/ItemCompareModal";
 import PlaceholderModal from "./modals/PlaceholderModal";
+import UserStatsModal from "./modals/UserStatsModal";
 
 function GameHomePage({ user, token, onLogout }) {
   const [gameUser, setGameUser] = useState(user);
@@ -21,6 +22,7 @@ function GameHomePage({ user, token, onLogout }) {
   const [showModal, setShowModal] = useState(null);
   const [modalData, setModalData] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [droppedLoot, setDroppedLoot] = useState([]);
   const fightCooldownRef = useRef(0);
 
   useEffect(() => {
@@ -49,18 +51,20 @@ function GameHomePage({ user, token, onLogout }) {
 
   const handleFightEnemy = async (enemyType, posX, posY) => {
     // Check if user has enough buns
-    if (user.buns <= 0) {
+    if (gameUser.buns <= 0) {
       alert("包子不足，无法战斗！");
-      return;
+      return Promise.reject(new Error("Insufficient buns"));
     }
 
-    // Add cooldown check (if you want to track it globally)
+    // Add cooldown check
     const now = Date.now();
     if (fightCooldownRef.current && now - fightCooldownRef.current < 1000) {
-      return; // Still in cooldown
+      return Promise.reject(new Error("On cooldown"));
     }
 
+    fightCooldownRef.current = now;
     setLoading(true);
+
     try {
       const response = await fetch(
         "http://localhost:8080/api/game/fight-enemy",
@@ -71,78 +75,51 @@ function GameHomePage({ user, token, onLogout }) {
             Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({
-            enemyType,
-            positionX: posX,
-            positionY: posY,
+            enemyType: enemyType,
+            posX: posX,
+            posY: posY,
           }),
         }
       );
 
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
       const data = await response.json();
+
       if (data.success) {
-        // Set cooldown
-        fightCooldownRef.current = now;
+        // Update user data
+        setGameUser(data.user);
 
-        // Update user state
-        // await fetchUserData();
-        await updateUserData();
-
-        // Show loot results if any
-        if (data.lootResults && data.lootResults.length > 0) {
-          setLootResults(data.lootResults);
-          setShowLootModal(true);
+        // Handle dropped loot
+        if (data.droppedItems && data.droppedItems.length > 0) {
+          setDroppedLoot(data.droppedItems);
+          setModalData({ items: data.droppedItems });
+          setShowModal("loot");
         }
+
+        return data;
       } else {
-        alert(data.message || "战斗失败");
+        throw new Error(data.message || "Fight failed");
       }
     } catch (error) {
       console.error("Fight failed:", error);
-      alert("战斗失败，请重试");
+      alert("战斗失败：" + error.message);
+      throw error;
     } finally {
       setLoading(false);
     }
   };
 
-  const handleLootDrops = (droppedItems) => {
-    // Auto-equip items for empty slots
-    const autoEquippedItems = [];
-    const remainingItems = [];
-
-    droppedItems.forEach((item) => {
-      const currentItem = gameUser.equippedItems?.[item.type];
-      if (!currentItem) {
-        // Auto-equip to empty slot
-        autoEquippedItems.push(item);
-        handleEquipItem(item);
-      } else {
-        remainingItems.push(item);
-      }
-    });
-
-    // Show remaining items for comparison/decision
-    if (remainingItems.length > 0) {
-      if (remainingItems.length === 1) {
-        // Single item comparison
-        const item = remainingItems[0];
-        const currentItem = gameUser.equippedItems[item.type];
-        setModalData({ newItem: item, currentItem });
-        setShowModal("itemCompare");
-      } else {
-        // Multiple items modal
-        setSelectedItems(remainingItems);
-        setShowModal("loot");
-      }
-    }
-  };
-
   const handleFightEliteBoss = async () => {
     if (gameUser.eliteBossCharges < 1) {
-      alert("精英怪次数不足！");
+      alert("精英怪挑战次数不足！");
       return;
     }
 
     if (gameUser.buns < 15) {
-      alert("包子不足！");
+      alert("包子不足，无法挑战精英怪！");
       return;
     }
 
@@ -161,7 +138,15 @@ function GameHomePage({ user, token, onLogout }) {
       const data = await response.json();
       if (data.success) {
         setGameUser(data.user);
-        handleLootDrops(data.droppedItems);
+
+        // Handle elite boss loot
+        if (data.droppedItems && data.droppedItems.length > 0) {
+          setDroppedLoot(data.droppedItems);
+          setModalData({ items: data.droppedItems });
+          setShowModal("loot");
+        }
+
+        alert(data.message);
       } else {
         alert(data.message);
       }
@@ -173,139 +158,15 @@ function GameHomePage({ user, token, onLogout }) {
     }
   };
 
-  const handleEquipItem = async (item) => {
-    try {
-      const response = await fetch(
-        "http://localhost:8080/api/game/equip-item",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({ itemId: item.id }),
-        }
-      );
-
-      const data = await response.json();
-      if (data.success) {
-        setGameUser(data.user);
-        setSelectedItems((prev) => prev.filter((i) => i.id !== item.id));
-        // Close modal if no more items
-        if (selectedItems.length <= 1) {
-          closeModal();
-        }
-      } else {
-        alert(data.message);
-      }
-    } catch (error) {
-      console.error("Equip failed:", error);
-      alert("装备失败，请重试");
-    }
-  };
-
-  const handleSellItem = async (item) => {
-    try {
-      const response = await fetch(
-        `http://localhost:8080/api/game/sell-item?itemId=${item.id}`,
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      const data = await response.json();
-      if (data.success) {
-        setGameUser(data.user);
-        setSelectedItems((prev) => prev.filter((i) => i.id !== item.id));
-        // Close modal if no more items
-        if (selectedItems.length <= 1) {
-          closeModal();
-        }
-      } else {
-        alert(data.message);
-      }
-    } catch (error) {
-      console.error("Sell failed:", error);
-      alert("出售失败，请重试");
-    }
-  };
-
-  const handleSellAllItems = async () => {
-    try {
-      for (const item of selectedItems) {
-        await handleSellItem(item);
-      }
-      closeModal();
-    } catch (error) {
-      console.error("Sell all failed:", error);
-      alert("批量出售失败，请重试");
-    }
-  };
-
-  const handleUpgradeLootLevel = async () => {
-    try {
-      const response = await fetch(
-        "http://localhost:8080/api/game/upgrade-loot-level",
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      const data = await response.json();
-      if (data.success) {
-        alert(data.message);
-        updateUserData();
-        closeModal();
-      } else {
-        alert(data.message);
-      }
-    } catch (error) {
-      console.error("Upgrade failed:", error);
-      alert("升级失败，请重试");
-    }
-  };
-
-  const handleUpgradeXMultiplier = async () => {
-    try {
-      const response = await fetch(
-        "http://localhost:8080/api/game/upgrade-x-multiplier",
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      const data = await response.json();
-      if (data.success) {
-        alert(data.message);
-        updateUserData();
-        closeModal();
-      } else {
-        alert(data.message);
-      }
-    } catch (error) {
-      console.error("X Multiplier upgrade failed:", error);
-      alert("倍数升级失败，请重试");
-    }
-  };
-
   const handleModalOpen = (modalType, data = null) => {
-    setShowModal(modalType);
     setModalData(data);
+    setShowModal(modalType);
   };
 
   const closeModal = () => {
     setShowModal(null);
     setModalData(null);
-    setSelectedItems([]);
+    setDroppedLoot([]);
   };
 
   const renderModalContent = () => {
@@ -313,49 +174,49 @@ function GameHomePage({ user, token, onLogout }) {
       case "loot":
         return (
           <LootModal
-            selectedItems={selectedItems}
-            user={gameUser}
-            onEquipItem={handleEquipItem}
-            onSellItem={handleSellItem}
-            onSellAll={handleSellAllItems}
+            items={modalData?.items || droppedLoot}
+            onClose={closeModal}
+            onEquip={(item) => console.log("Equip item:", item)}
+            onCompare={(items) => {
+              setSelectedItems(items);
+              setShowModal("itemCompare");
+            }}
           />
         );
       case "lootLevelUpgrade":
+        return <LootLevelModal user={gameUser} onClose={closeModal} />;
+      case "equipmentDetails":
         return (
-          <LootLevelModal
-            user={gameUser}
-            onUpgrade={handleUpgradeLootLevel}
-            onUpgradeXMultiplier={handleUpgradeXMultiplier}
-            onClose={closeModal}
-          />
+          <EquipmentDetailsModal equipment={modalData} onClose={closeModal} />
         );
       case "itemCompare":
-        return (
-          <ItemCompareModal
-            newItem={modalData?.newItem}
-            currentItem={modalData?.currentItem}
-            onEquip={() => {
-              handleEquipItem(modalData.newItem);
-              closeModal();
-            }}
-            onSell={() => {
-              handleSellItem(modalData.newItem);
-              closeModal();
-            }}
-          />
-        );
-      case "equipmentDetails":
-        return <EquipmentDetailsModal equipment={modalData} />;
-      case "掌天瓶":
-      case "星海壶":
+        return <ItemCompareModal items={selectedItems} onClose={closeModal} />;
+      case "userStats":
+        return <UserStatsModal user={gameUser} onClose={closeModal} />;
       case "福利":
       case "超值豪礼":
       case "活动":
       case "限时礼包":
       case "新手礼包":
+      case "掌天瓶":
+      case "星海壶":
+      case "法相":
+      case "坐骑":
+      case "魂玉":
+      case "灵兽":
+      case "法宝":
+      case "鱼获":
+      case "神兵":
+      case "武魂":
+      case "血缘":
+      case "秘宝":
+      case "妖灵":
+      case "红颜":
       case "每日任务":
       case "市场":
       case "仙途":
+      case "竞技场":
+      case "公会战":
         return <PlaceholderModal feature={showModal} />;
       default:
         return <PlaceholderModal feature="未知功能" />;
@@ -372,6 +233,8 @@ function GameHomePage({ user, token, onLogout }) {
         return "装备对比";
       case "equipmentDetails":
         return modalData?.name || "装备详情";
+      case "userStats":
+        return "角色属性";
       default:
         return showModal || "功能";
     }
@@ -387,6 +250,8 @@ function GameHomePage({ user, token, onLogout }) {
         return "large";
       case "equipmentDetails":
         return "small";
+      case "userStats":
+        return "large";
       case "福利":
       case "超值豪礼":
       case "活动":
@@ -397,25 +262,33 @@ function GameHomePage({ user, token, onLogout }) {
   };
 
   const isCanvasModal = () => {
-    return ["lootLevelUpgrade", "equipmentDetails", "itemCompare"].includes(
-      showModal
-    );
+    return [
+      "lootLevelUpgrade",
+      "equipmentDetails",
+      "itemCompare",
+      "userStats",
+    ].includes(showModal);
   };
 
   return (
-    <div className="game-home-container">
+    <div className={styles.gameHomeContainer}>
       {loading && (
-        <div className="loading-overlay">
-          <div className="loading-spinner"></div>
+        <div className={styles.loadingOverlay}>
+          <div className={styles.loadingSpinner}></div>
           <p>战斗中...</p>
         </div>
       )}
 
       {/* Top Navigation */}
-      <TopNavigation user={gameUser} />
+      <TopNavigation user={gameUser} onModalOpen={handleModalOpen} />
 
       {/* Left Navigation */}
-      <LeftNavigation user={gameUser} onModalOpen={handleModalOpen} />
+      <LeftNavigation
+        user={gameUser}
+        onModalOpen={handleModalOpen}
+        token={token}
+        onUserUpdate={updateUserData}
+      />
 
       {/* Right Navigation */}
       <RightNavigation user={gameUser} onModalOpen={handleModalOpen} />

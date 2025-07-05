@@ -1,6 +1,6 @@
 // src/components/game/RightNavigation.jsx
 import { useState } from "react";
-import "./RightNavigation.css";
+import styles from "./RightNavigation.module.css";
 
 function RightNavigation({ user, onModalOpen }) {
   const [showActivitiesDropdown, setShowActivitiesDropdown] = useState(false);
@@ -35,67 +35,58 @@ function RightNavigation({ user, onModalOpen }) {
   ];
 
   return (
-    <div className="right-navigation">
-      <div className="right-menu-items">
+    <div className={styles.rightNavigation}>
+      <div className={styles.rightMenuItems}>
         {rightMenuItems.map((item) => (
-          <div key={item.key} className="right-menu-item">
-            <button className="right-menu-btn" onClick={item.onClick}>
-              <span className="menu-icon">{item.icon}</span>
-              <span className="menu-text">{item.name}</span>
+          <div key={item.key} className={styles.rightMenuItem}>
+            <button
+              className={`${styles.rightMenuBtn} ${
+                item.key === "活动" ? styles.activity : ""
+              }`}
+              onClick={item.onClick}
+            >
+              <span className={styles.menuIcon}>{item.icon}</span>
+              <span className={styles.menuText}>{item.name}</span>
             </button>
 
-            {/* Activities Dropdown */}
+            {/* Activities Dropdown - opens to the left */}
             {item.key === "活动" && showActivitiesDropdown && (
-              <div className="activities-dropdown">
-                <div className="dropdown-header">
-                  <span>活动列表</span>
-                  <button
-                    className="close-dropdown"
-                    onClick={() => setShowActivitiesDropdown(false)}
-                  >
-                    ×
-                  </button>
-                </div>
-                <div className="activities-list">
-                  {activities.map((activity) => (
+              <div className={styles.activitiesDropdown}>
+                <div className={styles.speechTriangle}></div>
+                <div className={styles.dropdownContent}>
+                  <div className={styles.dropdownHeader}>
+                    <span>活动列表</span>
                     <button
-                      key={activity.key}
-                      className="activity-item"
-                      onClick={() => {
-                        onModalOpen(activity.key);
-                        setShowActivitiesDropdown(false);
-                      }}
+                      className={styles.closeDropdown}
+                      onClick={() => setShowActivitiesDropdown(false)}
                     >
-                      <span className="activity-icon">{activity.icon}</span>
-                      <span className="activity-name">{activity.name}</span>
+                      ×
                     </button>
-                  ))}
+                  </div>
+                  <div className={styles.activitiesList}>
+                    {activities.map((activity) => (
+                      <button
+                        key={activity.key}
+                        className={styles.activityItem}
+                        onClick={() => {
+                          onModalOpen(activity.key);
+                          setShowActivitiesDropdown(false);
+                        }}
+                      >
+                        <span className={styles.activityIcon}>
+                          {activity.icon}
+                        </span>
+                        <span className={styles.activityName}>
+                          {activity.name}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
                 </div>
               </div>
             )}
           </div>
         ))}
-      </div>
-
-      {/* Quick Access Buttons */}
-      <div className="quick-access">
-        <button
-          className="quick-btn daily-btn"
-          onClick={() => onModalOpen("每日任务")}
-          title="每日任务"
-        >
-          <span className="quick-icon">📋</span>
-          <span className="quick-text">日常</span>
-        </button>
-
-        <button
-          className="quick-btn market-btn"
-          onClick={() => onModalOpen("市场")}
-          title="市场"
-        >
-          <span className="quick-icon">🏪</span>
-          <span className="quick-text">市场</span>
-        </button>
       </div>
     </div>
   );

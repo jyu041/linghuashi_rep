@@ -1,4 +1,9 @@
 // src/components/game/BottomNavigationArea3.jsx
+import styles from "./BottomNavigationArea3.module.css";
+import {
+  getTierBackgroundStyle,
+  getTierDisplayName,
+} from "../../utils/tierColors";
 
 function BottomNavigationArea3({ user, onEquipmentClick }) {
   const equipmentSlots = [
@@ -22,55 +27,39 @@ function BottomNavigationArea3({ user, onEquipmentClick }) {
     return user.equippedItems?.[slotKey];
   };
 
-  const getTierColor = (tier) => {
-    const colors = {
-      凡品: "#808080",
-      良品: "#008000",
-      上品: "#008B8B",
-      极品: "#DDA0DD",
-      灵品: "#FFFF00",
-      王品: "#FFA500",
-      圣品: "#FF0000",
-      帝品: "#FFC0CB",
-      "帝品.精": "#800080",
-      "帝品.珍": "#006400",
-      "帝品.极": "#00008B",
-      "帝品.绝": "#4B0082",
-      "仙品.精": "#B8860B",
-      "仙品.极": "#8B0000",
-    };
-    return colors[tier] || "#808080";
-  };
-
   return (
-    <div className="nav-area area-3">
-      <div className="equipment-grid">
+    <div className={`${styles.navArea} ${styles.area3}`}>
+      <div className={styles.equipmentGrid}>
         {equipmentSlots.map((slot) => {
           const equippedItem = getEquippedItem(slot.key);
           return (
             <div
               key={slot.key}
-              className={`equipment-slot ${
-                equippedItem ? "equipped" : "empty"
+              className={`${styles.equipmentSlot} ${
+                equippedItem ? styles.equipped : styles.empty
               }`}
               onClick={() => equippedItem && onEquipmentClick(equippedItem)}
               title={slot.name}
             >
               {equippedItem ? (
                 <div
-                  className="equipped-item"
+                  className={styles.equippedItem}
                   style={{
-                    backgroundColor: getTierColor(equippedItem.tier),
-                    borderColor: getTierColor(equippedItem.tier),
+                    ...getTierBackgroundStyle(equippedItem.tier),
+                    borderColor:
+                      getTierBackgroundStyle(equippedItem.tier)
+                        .backgroundColor || "transparent",
                   }}
                 >
-                  <div className="item-icon">{slot.icon}</div>
-                  {/* <div className="item-tier">{equippedItem.tier}</div> */}
+                  <div className={styles.itemIcon}>{slot.icon}</div>
+                  <div className={styles.itemTier}>
+                    {getTierDisplayName(equippedItem.tier)}
+                  </div>
                 </div>
               ) : (
-                <div className="empty-slot">
-                  <div className="slot-icon">{slot.icon}</div>
-                  {/* <div className="slot-name">{slot.name}</div> */}
+                <div className={styles.emptySlot}>
+                  <div className={styles.slotIcon}>{slot.icon}</div>
+                  <div className={styles.slotName}>{slot.name}</div>
                 </div>
               )}
             </div>

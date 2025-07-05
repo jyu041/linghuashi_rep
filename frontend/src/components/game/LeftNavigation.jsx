@@ -1,7 +1,10 @@
 // src/components/game/LeftNavigation.jsx
-import "./LeftNavigation.css";
+import { useState } from "react";
+import styles from "./LeftNavigation.module.css";
 
-function LeftNavigation({ user, onModalOpen }) {
+function LeftNavigation({ user, onModalOpen, token, onUserUpdate }) {
+  const [missionCompleting, setMissionCompleting] = useState(false);
+
   const leftMenuItems = [
     {
       key: "掌天瓶",
@@ -35,52 +38,110 @@ function LeftNavigation({ user, onModalOpen }) {
 
   // Current main mission (mock data for now)
   const currentMission = {
-    lootIcon: "⚔️",
-    lootAmount: 5,
+    lootIcon: "🥟",
+    lootAmount: 15, // Reward amount in buns (10-20)
     objective: "击败哥布林",
     current: 194,
     total: 200,
   };
 
+  const isMissionComplete = currentMission.current >= currentMission.total;
+
+  const handleMissionComplete = async () => {
+    if (!isMissionComplete || missionCompleting) return;
+
+    setMissionCompleting(true);
+    try {
+      const response = await fetch(
+        "http://localhost:8080/api/game/complete-mission",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            missionType: "daily",
+            rewardAmount: currentMission.lootAmount,
+          }),
+        }
+      );
+
+      const data = await response.json();
+      if (data.success) {
+        alert(`任务完成！获得 ${currentMission.lootAmount} 包子奖励！`);
+        if (onUserUpdate) {
+          onUserUpdate();
+        }
+      } else {
+        alert(data.message || "任务完成失败");
+      }
+    } catch (error) {
+      console.error("Mission completion failed:", error);
+      alert("任务完成失败，请重试");
+    } finally {
+      setMissionCompleting(false);
+    }
+  };
+
   return (
-    <div className="left-navigation">
+    <div className={styles.leftNavigation}>
       {/* P2W and Welfare Buttons */}
-      <div className="left-menu-items">
+      <div className={styles.leftMenuItems}>
         {leftMenuItems.map((item) => {
           if (!item.show) return null;
 
           return (
             <button
               key={item.key}
-              className="left-menu-btn"
+              className={styles.leftMenuBtn}
               onClick={() => onModalOpen(item.key)}
               title={item.description}
             >
-              <span className="menu-icon">{item.icon}</span>
-              <span className="menu-text">{item.name}</span>
+              <span className={styles.menuIcon}>{item.icon}</span>
+              <span className={styles.menuText}>{item.name}</span>
             </button>
           );
         })}
       </div>
 
       {/* Current Main Mission */}
-      <div className="main-mission-container">
-        <div className="mission-loot">
-          <span className="loot-icon">{currentMission.lootIcon}</span>
-          <span className="loot-amount">×{currentMission.lootAmount}</span>
+      <div
+        className={`${styles.mainMissionContainer} ${
+          isMissionComplete ? styles.missionComplete : ""
+        }`}
+        onClick={isMissionComplete ? handleMissionComplete : undefined}
+        style={{
+          cursor: isMissionComplete ? "pointer" : "default",
+        }}
+      >
+        <div className={styles.missionLoot}>
+          <span className={styles.lootIcon}>{currentMission.lootIcon}</span>
+          <span className={styles.lootAmount}>
+            ×{currentMission.lootAmount}
+          </span>
         </div>
-        <div className="mission-details">
-          <div className="mission-objective">{currentMission.objective}</div>
-          <div className="mission-progress">
-            {currentMission.current}/{currentMission.total}
+        <div className={styles.missionDetails}>
+          <div className={styles.missionObjective}>
+            {currentMission.objective}
           </div>
-          <div className="mission-progress-bar">
+          <div className={styles.missionProgress}>
+            {currentMission.current}/{currentMission.total}
+            {isMissionComplete && !missionCompleting && (
+              <span className={styles.completeIndicator}>点击领取</span>
+            )}
+            {missionCompleting && (
+              <span className={styles.completingIndicator}>领取中...</span>
+            )}
+          </div>
+          <div className={styles.missionProgressBar}>
             <div
-              className="mission-progress-fill"
+              className={styles.missionProgressFill}
               style={{
-                width: `${
-                  (currentMission.current / currentMission.total) * 100
-                }%`,
+                width: `${Math.min(
+                  (currentMission.current / currentMission.total) * 100,
+                  100
+                )}%`,
               }}
             ></div>
           </div>

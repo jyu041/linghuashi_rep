@@ -1,10 +1,12 @@
-TODO 1. Complete Overhaul to CSS system. We will replace the current CSS system with XXX.module.css, our classNames will be: className={XXX.XXXX}, helping us keeping CSS separate, as currently I think some CSS have similar class names causing interuptions and clashes. This will be a large change in the whole code base. 
+TODO 1. The login screen's view port appears to be shrunken to mobile size, I need it to be full screen and responsive even on desktop. 
 
-TODO 2. On the right navigation section, i want the 日常 and 市场 buttons to be removed. I want the 活动 button to have consistent button size to the 限时礼包 and 新手礼包 buttons. Upon clicking on the 活动 button, it should open up the drop down menu to the left, instead of down, this drop down menu should have a dimmed background color, looking like a speach bubble with the small triangle pointing towards the 活动 button when clicked.
+TODO 2. The Top navigation section is not displayed on the screen, I need it to display.
 
-TODO 3. The Xmultiplier value is not correctly displaying in the frontend: <div className="multiplier-display">{user.xMultiplier || 1}倍</div>, this error can be fixed by modifying "BottomNavigationArea2". 
+TODO 3. After killing enemies, the loot drop system is not what I want. First of all, items should not have "需要等级", I do not want items to have level requirements before being able to be equipped. Secondly, what I want to see is the icon of the loot items, currently it displays the few dropped items with their names, the UI is just bad. What I want is a modal, displaying the icons of the dropped items, each icon surrounded by a box, with the background of the box showing the tier color of the item, the tier name in the background, and the name of the item above the icon. On the top right of this box, a green arrow pointing upwards should show if this item provides a higher 战力 then the current equipped item in this body slot by the user. Then the user can click onto this box with the item icon, which brings up a new modal comparing the stats between the equipped item and the newly dropped item.
 
-TODO 4. Fix the items tier colors. Currently the colors are just incorrect and messed up. In the LootLevelModal I want the background of the tiers to change color based on the tiers, currently it is the text that changes color, and it is not emphasizing enough of showing the difference in tiers. Also tiers like 帝品.精, instead of having a "." in between 帝品 and 精, I want the dot ascii symbol. The colors in equipmentSlot in the BottomNavigationArea3 for the different tiers of items are also incorrect, the correct colors are below:
+TODO 4. The Xmultiplier value is not correctly displaying in the frontend: <div className="multiplier-display">{user.xMultiplier || 1}倍</div>, this error can be fixed by modifying "BottomNavigationArea2" component. Currently it is bugged, no matter what the actual Xmultiplier value is, it just displays 1.
+
+TODO 5. The tier color is a bit incorrect, modify tierColors.js to make me satisfied:
 凡品 - grey
 良品 - green
 上品 - dark cyan
@@ -19,14 +21,4 @@ TODO 4. Fix the items tier colors. Currently the colors are just incorrect and m
 帝品.绝 - slightly dark purple to light purple gradient
 仙品.精 - slightly dark gold to light gold gradient
 仙品.极 - slightly dark red to light red gradient
-Make sure the gradient's are balanced with 50:50 ratio. 
-
-TODO 5. Upon clicking on the magnifying glass icon button in the BottomNavigationTop section, it should bring up a modal. The modal should be splitted into four main sections: “基础属性”，“战斗属性/抗性”，“元素属性/抗性”，“特殊属性”. In 基础属性 we should have: 生命，攻击，防御，速度，元素攻击，元素防御. In 战斗属性/抗性, we should have：吸血，吸血抗性，反击，反击抗性，连击，连击抗性，闪避，闪避抗性，暴击，暴击抗性，击晕，击晕抗性. In 元素属性/抗性 we should have: 流血，流血抗性，缠绕，缠绕抗性，冰冻，冰冻抗性，燃烧，燃烧抗性，坚韧，坚韧抗性. Finally in 特殊属性, we should have: 强化爆伤，弱化爆伤，强化治疗，弱化治疗，强化灵兽，弱化灵兽，最终增伤，最终减伤，PVE增伤，PVE减伤，PVP增伤，PVP减伤. If our user does not have these stats, they are default set to 0. By default a new user should have stats in 生命，攻击，防御，速度. Later on we will add methods of gaining all of these bonus stats.
-
-TODO 6. The canvas size, playable area is just weird. My requirements are that the top of the canvas reaches all the way to the top of the screen, the left and right of the canvas reaches all the way to the left and right of the screen, the playable area should follow the canvas size. Upon resize of the screen/viewport, the canvas size changes with it. 
-
-TODO 7. Completing the missions in the left navigation area should reward users with small amount of buns (10~20). 
-
-TODO 8. After killing enemies, new spawned in enemies have "undefined" name, "undefined" icon, fix this. 
-
-TODO 9. After killing enemies, I cannot see any loot drop. Something definitely wrong. It is not triggering the LootModal or the ItemCompareModal, it is extremely incorrect and needs fixing. 
+Make sure the gradient's are balanced with 50:50 ratio and has a seemless soft transition between the colors. Currently it is not seemless transition between the two colors in the graident.

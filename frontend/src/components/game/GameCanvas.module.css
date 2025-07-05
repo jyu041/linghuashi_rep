@@ -1,26 +1,28 @@
-/* src/components/game/GameCanvas.css */
-.game-canvas-container {
+/* src/components/game/GameCanvas.module.css */
+.gameCanvasContainer {
   position: fixed;
-  top: 80px;
-  left: 0; /* Extend to left edge */
-  right: 0; /* Extend to right edge */
-  bottom: 200px;
+  top: 0; /* Reach all the way to top of screen */
+  left: 0; /* Reach all the way to left of screen */
+  right: 0; /* Reach all the way to right of screen */
+  bottom: 220px; /* Leave space for bottom navigation */
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
   overflow: hidden;
+  z-index: 1; /* Behind navigation elements */
 }
 
-.game-canvas {
+.gameCanvas {
   width: 100%;
   height: 100%;
   cursor: crosshair;
   background: transparent;
+  display: block; /* Ensure proper canvas rendering */
 }
 
-.canvas-loading {
+.canvasLoading {
   position: absolute;
   top: 50%;
   left: 50%;
@@ -33,7 +35,7 @@
   z-index: 1000;
 }
 
-.combat-animation {
+.combatAnimation {
   font-size: 2rem;
   animation: spin 1s linear infinite;
 }
@@ -43,7 +45,7 @@
   to { transform: rotate(360deg); }
 }
 
-.canvas-controls {
+.canvasControls {
   position: absolute;
   top: 10px;
   right: 10px;
@@ -58,25 +60,30 @@
   max-width: 300px;
 }
 
-.control-hint {
+.controlHint {
   color: #ffd700;
   font-weight: bold;
 }
 
-.player-info {
+.playerInfo {
   display: flex;
   flex-direction: column;
   gap: 4px;
 }
 
-.player-info span {
+.playerInfo span {
   display: flex;
   align-items: center;
   gap: 4px;
 }
 
+/* Responsive adjustments */
 @media (max-width: 768px) {
-  .canvas-controls {
+  .gameCanvasContainer {
+    bottom: 200px; /* Adjust for mobile bottom nav */
+  }
+  
+  .canvasControls {
     font-size: 0.7rem;
     padding: 8px;
     max-width: 250px;

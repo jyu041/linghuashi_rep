@@ -1,5 +1,5 @@
-/* src/components/game/GameHomePage.css */
-.game-home-container {
+/* src/components/game/GameHomePage.module.css */
+.gameHomeContainer {
   width: 100vw;
   height: 100vh;
   position: relative;
@@ -7,7 +7,7 @@
   background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
 }
 
-.loading-overlay {
+.loadingOverlay {
   position: fixed;
   top: 0;
   left: 0;
@@ -23,7 +23,7 @@
   color: white;
 }
 
-.loading-spinner {
+.loadingSpinner {
   width: 50px;
   height: 50px;
   border: 3px solid rgba(255, 215, 0, 0.3);
@@ -39,6 +39,6 @@
 }
 
 /* Custom styling for loot modal */
-.loot-modal-custom .modal-body {
+.lootModalCustom .modalBody {
   max-height: 70vh;
 }

@@ -1,5 +1,6 @@
 // src/components/game/BottomNavigationArea2.jsx
 import { formatChineseNumber } from "../../utils/formatNumber";
+import styles from "./BottomNavigationArea2.module.css";
 
 function BottomNavigationArea2({
   user,
@@ -16,17 +17,17 @@ function BottomNavigationArea2({
   };
 
   return (
-    <div className="nav-area area-2">
+    <div className={`${styles.navArea} ${styles.area2}`}>
       {/* Top section */}
-      <div className="area-2-top">
-        <button className="inventory-btn" title="背包">
+      <div className={styles.area2Top}>
+        <button className={styles.inventoryBtn} title="背包">
           🎒
         </button>
-        <button className="mail-btn" title="邮件">
+        <button className={styles.mailBtn} title="邮件">
           📧
         </button>
         <button
-          className="elite-boss-btn"
+          className={styles.eliteBossBtn}
           onClick={onFightEliteBoss}
           disabled={user.eliteBossCharges < 1 || user.buns < 15}
         >
@@ -35,40 +36,42 @@ function BottomNavigationArea2({
       </div>
 
       {/* Bottom section */}
-      <div className="area-2-bottom">
-        <div className="side-buttons-left">
-          <button className="guild-btn">仙盟</button>
-          <button className="cave-btn">洞府</button>
+      <div className={styles.area2Bottom}>
+        <div className={styles.sideButtonsLeft}>
+          <button className={styles.guildBtn}>仙盟</button>
+          <button className={styles.caveBtn}>洞府</button>
         </div>
 
-        <div className="fight-section">
+        <div className={styles.fightSection}>
           <button
-            className="loot-level-btn"
+            className={styles.lootLevelBtn}
             onClick={onShowLootLevelModal}
             title="升级掉落等级"
           >
             {user.lootDropLevel}级
           </button>
 
-          <div className="main-fight-btn" onClick={handleMainFightClick}>
-            <div className="multiplier-display">{user.xMultiplier || 1}倍</div>
-            <div className="fight-icon">⚔️</div>
-            <div className="buns-display">
-              <span className="buns-icon">🥟</span>
-              <span className="buns-count">
+          <div className={styles.mainFightBtn} onClick={handleMainFightClick}>
+            <div className={styles.multiplierDisplay}>
+              {user.xMultiplier || 1}倍
+            </div>
+            <div className={styles.fightIcon}>⚔️</div>
+            <div className={styles.bunsDisplay}>
+              <span className={styles.bunsIcon}>🥟</span>
+              <span className={styles.bunsCount}>
                 {formatChineseNumber(user.buns)}
               </span>
             </div>
           </div>
 
-          <button className="auto-fight-btn" title="自动战斗">
+          <button className={styles.autoFightBtn} title="自动战斗">
             ⚙️
           </button>
         </div>
 
-        <div className="side-buttons-right">
-          <button className="challenge-btn">挑战</button>
-          <button className="main-quest-btn">主线</button>
+        <div className={styles.sideButtonsRight}>
+          <button className={styles.challengeBtn}>挑战</button>
+          <button className={styles.mainQuestBtn}>主线</button>
         </div>
       </div>
     </div>

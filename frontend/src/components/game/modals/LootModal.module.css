@@ -1,0 +1,273 @@
+/* src/components/game/modals/LootModal.module.css */
+.lootModal {
+  width: 100%;
+  max-width: 1000px;
+  background: rgba(20, 20, 30, 0.95);
+  border-radius: 12px;
+  padding: 0;
+  color: white;
+  max-height: 85vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.modalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  border-bottom: 2px solid rgba(255, 215, 0, 0.3);
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.modalTitle {
+  color: #ffd700;
+  margin: 0;
+  font-size: 1.4rem;
+  font-weight: bold;
+}
+
+.headerActions {
+  display: flex;
+  gap: 10px;
+}
+
+.compareButton {
+  background: linear-gradient(45deg, #4CAF50, #8BC34A);
+  border: none;
+  border-radius: 8px;
+  padding: 10px 20px;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.compareButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(76, 175, 80, 0.4);
+}
+
+.closeButton {
+  background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+  border: none;
+  border-radius: 8px;
+  padding: 10px 20px;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.closeButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(255, 107, 107, 0.4);
+}
+
+.noItemsMessage {
+  text-align: center;
+  color: #ff6b6b;
+  margin: 40px 0;
+  font-size: 1.2rem;
+}
+
+.itemsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 15px;
+  padding: 20px;
+  flex: 1;
+  overflow-y: auto;
+}
+
+.lootItem {
+  background: rgba(255, 255, 255, 0.1);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  padding: 15px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  min-height: 220px;
+  display: flex;
+  flex-direction: column;
+}
+
+.lootItem:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.4);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.lootItem.selected {
+  border-color: #4CAF50;
+  background: rgba(76, 175, 80, 0.2);
+  box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+}
+
+.itemTier {
+  position: absolute;
+  top: -8px;
+  left: 15px;
+  padding: 4px 12px;
+  border-radius: 15px;
+  font-weight: bold;
+  font-size: 0.8rem;
+  color: #000;
+  text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.8);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.itemInfo {
+  flex: 1;
+  margin-top: 12px;
+}
+
+.itemName {
+  color: white;
+  margin: 0 0 8px 0;
+  font-size: 1.1rem;
+  font-weight: bold;
+}
+
+.itemType {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.9rem;
+  margin-bottom: 12px;
+}
+
+.itemStats {
+  margin-bottom: 12px;
+}
+
+.statLine {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 3px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.statLine:last-child {
+  border-bottom: none;
+}
+
+.statName {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 0.85rem;
+}
+
+.statValue {
+  color: #4CAF50;
+  font-weight: bold;
+  font-size: 0.85rem;
+}
+
+.specialEffects {
+  margin-bottom: 12px;
+}
+
+.specialEffect {
+  background: rgba(138, 43, 226, 0.2);
+  border: 1px solid rgba(138, 43, 226, 0.5);
+  border-radius: 6px;
+  padding: 6px 10px;
+  margin-bottom: 6px;
+  font-size: 0.8rem;
+  color: #DDA0DD;
+}
+
+.specialEffect:last-child {
+  margin-bottom: 0;
+}
+
+.itemActions {
+  margin-top: auto;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.equipButton {
+  background: linear-gradient(45deg, #ff6b6b, #ffd700);
+  border: none;
+  border-radius: 6px;
+  padding: 8px 16px;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  width: 100%;
+  margin-bottom: 8px;
+}
+
+.equipButton:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 3px 10px rgba(255, 107, 107, 0.4);
+}
+
+.levelRequirement {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.8rem;
+  text-align: center;
+}
+
+.selectedIndicator {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: #4CAF50;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 0.7rem;
+  font-weight: bold;
+}
+
+.modalFooter {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.instructions {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.9rem;
+}
+
+.selectionCount {
+  color: #ffd700;
+  font-weight: bold;
+  font-size: 0.9rem;
+}
+
+@media (max-width: 768px) {
+  .lootModal {
+    max-width: 95vw;
+  }
+
+  .modalHeader {
+    flex-direction: column;
+    gap: 10px;
+    align-items: stretch;
+  }
+
+  .headerActions {
+    justify-content: center;
+  }
+
+  .itemsGrid {
+    grid-template-columns: 1fr;
+    padding: 15px;
+  }
+
+  .modalFooter {
+    flex-direction: column;
+    gap: 8px;
+    text-align: center;
+  }
+}

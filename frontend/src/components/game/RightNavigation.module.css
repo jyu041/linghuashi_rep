@@ -1,0 +1,195 @@
+/* src/components/game/RightNavigation.module.css */
+.rightNavigation {
+  position: fixed;
+  right: 0;
+  top: 80px;
+  bottom: 220px;
+  width: 120px;
+  background: transparent;
+  backdrop-filter: none;
+  border: none;
+  padding: 20px 10px;
+  z-index: 90;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  box-sizing: border-box;
+}
+
+.rightMenuItems {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.rightMenuItem {
+  position: relative;
+}
+
+.rightMenuBtn {
+  background: rgba(255, 99, 71, 0.3);
+  border: 1px solid rgba(255, 99, 71, 0.6);
+  border-radius: 8px;
+  padding: 12px 8px;
+  color: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  text-align: center;
+  width: 100%;
+}
+
+.rightMenuBtn:hover {
+  background: rgba(255, 99, 71, 0.5);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(255, 99, 71, 0.4);
+}
+
+.rightMenuBtn.activity {
+  background: rgba(0, 191, 255, 0.3);
+  border-color: rgba(0, 191, 255, 0.6);
+}
+
+.rightMenuBtn.activity:hover {
+  background: rgba(0, 191, 255, 0.5);
+  box-shadow: 0 4px 15px rgba(0, 191, 255, 0.4);
+}
+
+.menuIcon {
+  font-size: 1.5rem;
+}
+
+.menuText {
+  font-size: 0.7rem;
+  font-weight: bold;
+}
+
+/* Activities Dropdown - opens to the left with speech bubble style */
+.activitiesDropdown {
+  position: absolute;
+  right: calc(100% + 15px);
+  top: 0;
+  width: 200px;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6);
+  z-index: 1000;
+  overflow: hidden;
+}
+
+/* Speech bubble triangle pointing to the right */
+.speechTriangle {
+  position: absolute;
+  right: -10px;
+  top: 20px;
+  width: 0;
+  height: 0;
+  border-left: 10px solid rgba(0, 0, 0, 0.85);
+  border-top: 8px solid transparent;
+  border-bottom: 8px solid transparent;
+}
+
+.dropdownContent {
+  padding: 0;
+}
+
+.dropdownHeader {
+  background: rgba(0, 191, 255, 0.3);
+  padding: 12px 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.dropdownHeader span {
+  color: white;
+  font-weight: bold;
+  font-size: 0.9rem;
+}
+
+.closeDropdown {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 0;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: background 0.3s ease;
+}
+
+.closeDropdown:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.activitiesList {
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.activityItem {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  padding: 10px 12px;
+  color: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-align: left;
+  width: 100%;
+}
+
+.activityItem:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateX(-2px);
+}
+
+.activityIcon {
+  font-size: 1rem;
+}
+
+.activityName {
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+@media (max-width: 768px) {
+  .rightNavigation {
+    width: 80px;
+    padding: 15px 5px;
+    bottom: 200px;
+  }
+  
+  .rightMenuBtn {
+    padding: 8px 4px;
+  }
+  
+  .menuIcon {
+    font-size: 1.2rem;
+  }
+  
+  .menuText {
+    font-size: 0.6rem;
+  }
+
+  .activitiesDropdown {
+    width: 180px;
+    right: calc(100% + 10px);
+  }
+}

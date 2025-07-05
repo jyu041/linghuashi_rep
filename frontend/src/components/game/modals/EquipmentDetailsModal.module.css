@@ -1,0 +1,153 @@
+/* src/components/game/modals/EquipmentDetailsModal.module.css */
+.equipmentDetailsModal {
+  width: 100%;
+  max-width: 400px;
+  background: rgba(20, 20, 30, 0.95);
+  border-radius: 12px;
+  padding: 20px;
+  color: white;
+}
+
+.equipmentHeader {
+  text-align: center;
+  margin-bottom: 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  padding-bottom: 15px;
+}
+
+.equipmentName {
+  color: white;
+  margin: 0 0 10px 0;
+  font-size: 1.3rem;
+  font-weight: bold;
+}
+
+.equipmentTier {
+  display: inline-block;
+  padding: 6px 15px;
+  border-radius: 20px;
+  font-weight: bold;
+  font-size: 0.9rem;
+  color: #000;
+  text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.8);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.equipmentStats {
+  margin-bottom: 20px;
+}
+
+.statGroup {
+  margin-bottom: 15px;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+}
+
+.statGroupTitle {
+  color: #ffd700;
+  margin: 0 0 10px 0;
+  font-size: 1rem;
+  border-bottom: 1px solid rgba(255, 215, 0, 0.3);
+  padding-bottom: 5px;
+}
+
+.statItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 4px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.statItem:last-child {
+  border-bottom: none;
+}
+
+.statName {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 0.9rem;
+}
+
+.statValue {
+  color: #4CAF50;
+  font-weight: bold;
+  font-size: 0.9rem;
+}
+
+.specialEffect {
+  background: rgba(138, 43, 226, 0.2);
+  border: 1px solid rgba(138, 43, 226, 0.5);
+  border-radius: 6px;
+  padding: 8px 12px;
+  margin-bottom: 8px;
+  font-size: 0.85rem;
+  color: #DDA0DD;
+}
+
+.specialEffect:last-child {
+  margin-bottom: 0;
+}
+
+.equipmentInfo {
+  margin-bottom: 20px;
+  padding: 12px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 8px;
+}
+
+.infoItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 4px 0;
+}
+
+.infoLabel {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.9rem;
+}
+
+.infoValue {
+  color: white;
+  font-weight: bold;
+  font-size: 0.9rem;
+}
+
+.modalActions {
+  text-align: center;
+}
+
+.closeButton {
+  background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+  border: none;
+  border-radius: 8px;
+  padding: 12px 30px;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 1rem;
+}
+
+.closeButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(255, 107, 107, 0.4);
+}
+
+@media (max-width: 768px) {
+  .equipmentDetailsModal {
+    padding: 15px;
+  }
+
+  .equipmentName {
+    font-size: 1.1rem;
+  }
+
+  .statItem,
+  .infoItem {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+}

@@ -1,90 +1,60 @@
 // src/components/game/TopNavigation.jsx
-import "./TopNavigation.css";
+import styles from "./TopNavigation.module.css";
 import { formatChineseNumber } from "../../utils/formatNumber";
 
-function TopNavigation({ user }) {
-  const getProfileImage = () => {
-    // Default avatar based on gender and profession
-    const genderSymbol = user.gender === "male" ? "♂" : "♀";
-    return genderSymbol;
-  };
+function TopNavigation({ user, onModalOpen }) {
+  const currencies = [
+    { key: "buns", icon: "🥟", value: user.buns || 0 },
+    { key: "gems", icon: "💎", value: user.gems || 0 },
+    { key: "coins", icon: "🪙", value: user.coins || 0 },
+  ];
 
-  const getP2WIcons = () => {
-    const icons = [];
-
-    // Show P2W items if user owns them
-    if (user.level >= 60 && user.ownedP2WItems?.["掌天瓶"]) {
-      icons.push(
-        <div key="瓶" className="p2w-icon" title="掌天瓶">
-          🏺
-        </div>
-      );
-    }
-
-    if (user.level >= 120 && user.ownedP2WItems?.["星海壶"]) {
-      icons.push(
-        <div key="壶" className="p2w-icon" title="星海壶">
-          🫖
-        </div>
-      );
-    }
-
-    // Add third icon if there are more P2W items
-    if (user.ownedP2WItems?.["speed_boost"]) {
-      icons.push(
-        <div key="speed" className="p2w-icon" title="速度提升">
-          ⚡
-        </div>
-      );
-    }
-
-    return icons;
-  };
+  const p2wIcons = [
+    { key: "vip", icon: "👑", action: () => onModalOpen?.("VIP") },
+    { key: "shop", icon: "🏪", action: () => onModalOpen?.("商城") },
+    { key: "recharge", icon: "💳", action: () => onModalOpen?.("充值") },
+  ];
 
   return (
-    <div className="top-navigation">
-      {/* Profile Picture - Left 1/5 */}
-      <div className="profile-section">
-        <div className="profile-avatar">{getProfileImage()}</div>
+    <div className={styles.topNavigation}>
+      <div className={styles.profileSection}>
+        <div className={styles.profileAvatar}>
+          {user.gender === "male" ? "♂" : "♀"}
+        </div>
       </div>
 
-      {/* Main Info - Right 4/5 */}
-      <div className="main-info-section">
-        {/* Row 1: Display Name, Power Rating, P2W Icons */}
-        <div className="info-row-1">
-          <div className="display-name">{user.displayName}</div>
-          <div className="power-rating">
-            <span className="power-label">战力</span>
-            <span className="power-value">
-              {formatChineseNumber(user.powerRating)}
+      <div className={styles.mainInfoSection}>
+        <div className={styles.infoRow1}>
+          <div className={styles.displayName}>{user.displayName}</div>
+          <div className={styles.powerRating}>
+            <span className={styles.powerLabel}>战力:</span>
+            <span className={styles.powerValue}>
+              {formatChineseNumber(user.powerRating || 0)}
             </span>
           </div>
-          <div className="p2w-icons">{getP2WIcons()}</div>
+          <div className={styles.p2wIcons}>
+            {p2wIcons.map((item) => (
+              <button
+                key={item.key}
+                className={styles.p2wIcon}
+                onClick={item.action}
+                title={item.key}
+              >
+                {item.icon}
+              </button>
+            ))}
+          </div>
         </div>
 
-        {/* Row 2: Currencies */}
-        <div className="info-row-2">
-          <div className="currency-item">
-            <span className="currency-icon">🪙</span>
-            <span className="currency-amount">
-              {formatChineseNumber(user.silverCoins)}
-            </span>
-            <button className="currency-plus">+</button>
-          </div>
-          <div className="currency-item">
-            <span className="currency-icon">💰</span>
-            <span className="currency-amount">
-              {formatChineseNumber(user.goldCoins)}
-            </span>
-            <button className="currency-plus">+</button>
-          </div>
-          <div className="currency-item">
-            <span className="currency-icon">💎</span>
-            <span className="currency-amount">
-              {formatChineseNumber(user.godCoins)}
-            </span>
-            <button className="currency-plus">+</button>
-          </div>
+        <div className={styles.infoRow2}>
+          {currencies.map((currency) => (
+            <div key={currency.key} className={styles.currencyItem}>
+              <span className={styles.currencyIcon}>{currency.icon}</span>
+              <span className={styles.currencyValue}>
+                {formatChineseNumber(currency.value)}
+              </span>
+            </div>
+          ))}
         </div>
       </div>
     </div>

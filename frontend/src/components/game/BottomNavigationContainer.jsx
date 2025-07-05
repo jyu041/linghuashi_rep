@@ -1,6 +1,6 @@
 // src/components/game/BottomNavigationContainer.jsx
 import { useState } from "react";
-import "./BottomNavigation.css";
+import styles from "./BottomNavigationContainer.module.css";
 import BottomNavigationTop from "./BottomNavigationTop";
 import BottomNavigationArea1 from "./BottomNavigationArea1";
 import BottomNavigationArea2 from "./BottomNavigationArea2";
@@ -85,12 +85,16 @@ function BottomNavigationContainer({
   };
 
   return (
-    <div className="bottom-navigation">
+    <div className={styles.bottomNavigation}>
       {/* Top Area - User Stats */}
-      <BottomNavigationTop user={user} onBreakthrough={handleBreakthrough} />
+      <BottomNavigationTop
+        user={user}
+        onBreakthrough={handleBreakthrough}
+        onModalOpen={onModalOpen}
+      />
 
       {/* Bottom Areas */}
-      <div className="bottom-nav-bottom">
+      <div className={styles.bottomNavBottom}>
         {/* Area 1: Function Grid */}
         <BottomNavigationArea1 onModalOpen={onModalOpen} />
 

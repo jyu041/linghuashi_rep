@@ -1,33 +1,28 @@
-// src/components/auth/InitialSelection.jsx
+// src/components/InitialSelection.jsx
 import { useState } from "react";
-import "./InitialSelection.css";
+import styles from "./InitialSelection.module.css";
 
-function InitialSelection({ token, onComplete }) {
+function InitialSelection({ user, token, onComplete }) {
+  const [selectedGender, setSelectedGender] = useState("");
   const [displayName, setDisplayName] = useState("");
-  const [profession, setProfession] = useState("");
-  const [gender, setGender] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-
-  const professions = [
-    { id: "体修", name: "体修", description: "强化肉身，追求力量极限" },
-    { id: "道修", name: "道修", description: "感悟天道，掌控自然法则" },
-    { id: "法修", name: "法修", description: "钻研法术，操控元素能量" },
-    { id: "妖修", name: "妖修", description: "化形修炼，兽性与人性并存" },
-    { id: "气修", name: "气修", description: "炼气修真，追求长生不老" },
-    { id: "禅修", name: "禅修", description: "静心悟道，心境澄明如水" },
-  ];
-
-  const genders = [
-    { id: "male", name: "男", icon: "♂" },
-    { id: "female", name: "女", icon: "♀" },
-  ];
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!displayName || !profession || !gender) {
-      setError("请完成所有选择");
+    if (!selectedGender) {
+      setError("请选择性别");
+      return;
+    }
+
+    if (!displayName.trim()) {
+      setError("请输入显示名称");
+      return;
+    }
+
+    if (displayName.trim().length < 2 || displayName.trim().length > 20) {
+      setError("显示名称长度应在2-20个字符之间");
       return;
     }
 
@@ -44,101 +39,176 @@ function InitialSelection({ token, onComplete }) {
             Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({
-            displayName,
-            profession,
-            gender,
+            gender: selectedGender,
+            displayName: displayName.trim(),
           }),
         }
       );
 
       const data = await response.json();
 
-      if (data.success) {
+      if (response.ok && data.success) {
         onComplete(data.user);
       } else {
-        setError(data.message);
+        setError(data.message || "设置失败，请重试");
       }
     } catch (error) {
-      setError("网络错误，请重试");
+      console.error("Initial selection error:", error);
+      setError("网络错误，请检查连接后重试");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="initial-selection-container">
-      <div className="selection-backdrop">
-        <div className="mystical-bg"></div>
-      </div>
+    <div className={styles.selectionContainer}>
+      <div className={styles.selectionCard}>
+        <div className={styles.header}>
+          <h1 className={styles.title}>角色设置</h1>
+          <p className={styles.subtitle}>完善您的角色信息以开始游戏</p>
+        </div>
 
-      <div className="selection-content">
-        <h1 className="selection-title">开始你的修仙之路</h1>
-        <p className="selection-subtitle">选择你的身份和道路</p>
+        <form onSubmit={handleSubmit} className={styles.selectionForm}>
+          {/* Gender Selection */}
+          <div className={styles.formGroup}>
+            <label className={styles.formLabel}>选择性别</label>
+            <div className={styles.genderOptions}>
+              <button
+                type="button"
+                className={`${styles.genderButton} ${
+                  selectedGender === "male" ? styles.selected : ""
+                }`}
+                onClick={() => setSelectedGender("male")}
+              >
+                <span className={styles.genderIcon}>♂</span>
+                <span className={styles.genderText}>男性</span>
+              </button>
+              <button
+                type="button"
+                className={`${styles.genderButton} ${
+                  selectedGender === "female" ? styles.selected : ""
+                }`}
+                onClick={() => setSelectedGender("female")}
+              >
+                <span className={styles.genderIcon}>♀</span>
+                <span className={styles.genderText}>女性</span>
+              </button>
+            </div>
+          </div>
 
-        {error && <div className="error-message">{error}</div>}
-
-        <form onSubmit={handleSubmit} className="selection-form">
           {/* Display Name */}
-          <div className="form-section">
-            <h3>道号</h3>
+          <div className={styles.formGroup}>
+            <label htmlFor="displayName" className={styles.formLabel}>
+              显示名称
+            </label>
             <input
               type="text"
+              id="displayName"
               value={displayName}
               onChange={(e) => setDisplayName(e.target.value)}
-              placeholder="请输入你的道号"
-              maxLength="20"
-              className="name-input"
+              className={styles.nameInput}
+              placeholder="输入您的游戏昵称"
+              maxLength={20}
+              disabled={loading}
             />
+            <div className={styles.characterCount}>{displayName.length}/20</div>
           </div>
 
-          {/* Gender Selection */}
-          <div className="form-section">
-            <h3>性别</h3>
-            <div className="gender-options">
-              {genders.map((g) => (
-                <button
-                  key={g.id}
-                  type="button"
-                  className={`gender-option ${
-                    gender === g.id ? "selected" : ""
-                  }`}
-                  onClick={() => setGender(g.id)}
-                >
-                  <span className="gender-icon">{g.icon}</span>
-                  <span className="gender-name">{g.name}</span>
-                </button>
-              ))}
+          {/* Error Message */}
+          {error && (
+            <div className={styles.errorMessage}>
+              <span className={styles.errorIcon}>⚠️</span>
+              {error}
             </div>
-          </div>
+          )}
 
-          {/* Profession Selection */}
-          <div className="form-section">
-            <h3>修炼流派</h3>
-            <div className="profession-grid">
-              {professions.map((prof) => (
-                <button
-                  key={prof.id}
-                  type="button"
-                  className={`profession-card ${
-                    profession === prof.id ? "selected" : ""
-                  }`}
-                  onClick={() => setProfession(prof.id)}
-                >
-                  <div className="profession-name">{prof.name}</div>
-                  <div className="profession-desc">{prof.description}</div>
-                </button>
-              ))}
-            </div>
-          </div>
-
+          {/* Submit Button */}
           <button
             type="submit"
-            className="confirm-btn"
-            disabled={loading || !displayName || !profession || !gender}
+            className={styles.submitButton}
+            disabled={loading || !selectedGender || !displayName.trim()}
           >
-            {loading ? "创建中..." : "确认选择"}
+            {loading ? (
+              <>
+                <span className={styles.loadingSpinner}></span>
+                创建角色中...
+              </>
+            ) : (
+              <>
+                <span className={styles.submitIcon}>🚀</span>
+                开始游戏
+              </>
+            )}
           </button>
         </form>
+
+        {/* Preview Section */}
+        {(selectedGender || displayName) && (
+          <div className={styles.previewSection}>
+            <h3 className={styles.previewTitle}>角色预览</h3>
+            <div className={styles.characterPreview}>
+              <div className={styles.avatar}>
+                {selectedGender === "male"
+                  ? "♂"
+                  : selectedGender === "female"
+                  ? "♀"
+                  : "?"}
+              </div>
+              <div className={styles.previewInfo}>
+                <div className={styles.previewName}>
+                  {displayName || "未设置昵称"}
+                </div>
+                <div className={styles.previewGender}>
+                  {selectedGender === "male"
+                    ? "男性角色"
+                    : selectedGender === "female"
+                    ? "女性角色"
+                    : "未选择性别"}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Background decoration */}
+      <div className={styles.backgroundDecoration}>
+        <div
+          className={styles.decorationItem}
+          style={{ top: "10%", left: "10%" }}
+        >
+          ⚔️
+        </div>
+        <div
+          className={styles.decorationItem}
+          style={{ top: "20%", right: "15%" }}
+        >
+          🛡️
+        </div>
+        <div
+          className={styles.decorationItem}
+          style={{ bottom: "30%", left: "20%" }}
+        >
+          💎
+        </div>
+        <div
+          className={styles.decorationItem}
+          style={{ bottom: "20%", right: "20%" }}
+        >
+          🏆
+        </div>
+        <div
+          className={styles.decorationItem}
+          style={{ top: "50%", left: "5%" }}
+        >
+          ✨
+        </div>
+        <div
+          className={styles.decorationItem}
+          style={{ top: "60%", right: "10%" }}
+        >
+          🌟
+        </div>
       </div>
     </div>
   );

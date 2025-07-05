@@ -1,13 +1,13 @@
-/* src/components/game/LeftNavigation.css */
-.left-navigation {
+/* src/components/game/LeftNavigation.module.css */
+.leftNavigation {
   position: fixed;
   left: 0;
   top: 80px;
   bottom: 200px;
-  width: 120px; /* Increased width */
-  background: transparent; /* Completely transparent */
-  backdrop-filter: none; /* Remove blur */
-  border: none; /* Remove border */
+  width: 120px;
+  background: transparent;
+  backdrop-filter: none;
+  border: none;
   padding: 20px 10px;
   z-index: 90;
   display: flex;
@@ -16,13 +16,13 @@
   box-sizing: border-box;
 }
 
-.left-menu-items {
+.leftMenuItems {
   display: flex;
   flex-direction: column;
   gap: 12px;
 }
 
-.left-menu-btn {
+.leftMenuBtn {
   background: rgba(138, 43, 226, 0.3);
   border: 1px solid rgba(138, 43, 226, 0.6);
   border-radius: 8px;
@@ -37,22 +37,22 @@
   text-align: center;
 }
 
-.left-menu-btn:hover {
+.leftMenuBtn:hover {
   background: rgba(138, 43, 226, 0.5);
   transform: translateY(-2px);
   box-shadow: 0 4px 15px rgba(138, 43, 226, 0.4);
 }
 
-.menu-icon {
+.menuIcon {
   font-size: 1.5rem;
 }
 
-.menu-text {
+.menuText {
   font-size: 0.7rem;
   font-weight: bold;
 }
 
-.main-mission-container {
+.mainMissionContainer {
   background: rgba(255, 215, 0, 0.2);
   border: 1px solid rgba(255, 215, 0, 0.5);
   border-radius: 12px;
@@ -61,49 +61,99 @@
   gap: 8px;
   align-items: center;
   margin-top: auto;
-  width: 200px; /* Extended beyond navigation width */
+  width: 200px;
   position: relative;
   left: 0;
   box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+  transition: all 0.3s ease;
 }
 
-.mission-loot {
+.mainMissionContainer.missionComplete {
+  background: rgba(76, 175, 80, 0.3);
+  border-color: rgba(76, 175, 80, 0.7);
+  box-shadow: 0 4px 15px rgba(76, 175, 80, 0.4);
+  animation: pulse 2s infinite;
+}
+
+.mainMissionContainer.missionComplete:hover {
+  background: rgba(76, 175, 80, 0.5);
+  transform: scale(1.02);
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 4px 15px rgba(76, 175, 80, 0.4);
+  }
+  50% {
+    box-shadow: 0 4px 20px rgba(76, 175, 80, 0.7);
+  }
+  100% {
+    box-shadow: 0 4px 15px rgba(76, 175, 80, 0.4);
+  }
+}
+
+.missionLoot {
   display: flex;
   flex-direction: column;
   align-items: center;
   min-width: 40px;
 }
 
-.loot-icon {
+.lootIcon {
   font-size: 1.2rem;
 }
 
-.loot-amount {
+.lootAmount {
   font-size: 0.7rem;
   color: #ffd700;
   font-weight: bold;
 }
 
-.mission-details {
+.missionDetails {
   flex: 1;
   display: flex;
   flex-direction: column;
   gap: 4px;
 }
 
-.mission-objective {
+.missionObjective {
   color: white;
   font-size: 0.8rem;
   font-weight: bold;
 }
 
-.mission-progress {
+.missionProgress {
   color: #ffd700;
   font-size: 0.7rem;
   font-weight: bold;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
 }
 
-.mission-progress-bar {
+.completeIndicator {
+  color: #4CAF50;
+  font-size: 0.6rem;
+  font-weight: bold;
+  animation: blink 1.5s infinite;
+}
+
+.completingIndicator {
+  color: #FF9800;
+  font-size: 0.6rem;
+  font-weight: bold;
+}
+
+@keyframes blink {
+  0%, 50% {
+    opacity: 1;
+  }
+  51%, 100% {
+    opacity: 0.5;
+  }
+}
+
+.missionProgressBar {
   width: 100%;
   height: 4px;
   background: rgba(255, 255, 255, 0.2);
@@ -111,36 +161,36 @@
   overflow: hidden;
 }
 
-.mission-progress-fill {
+.missionProgressFill {
   height: 100%;
   background: linear-gradient(90deg, #4CAF50, #8BC34A);
   transition: width 0.3s ease;
 }
 
 @media (max-width: 768px) {
-  .left-navigation {
+  .leftNavigation {
     width: 80px;
     padding: 15px 5px;
   }
   
-  .left-menu-btn {
+  .leftMenuBtn {
     padding: 8px 4px;
   }
   
-  .menu-icon {
+  .menuIcon {
     font-size: 1.2rem;
   }
   
-  .menu-text {
+  .menuText {
     font-size: 0.6rem;
   }
   
-  .main-mission-container {
+  .mainMissionContainer {
     width: 150px;
     padding: 8px;
   }
   
-  .mission-objective {
+  .missionObjective {
     font-size: 0.7rem;
   }
 }

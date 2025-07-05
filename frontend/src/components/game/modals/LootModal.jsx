@@ -1,117 +1,133 @@
 // src/components/game/modals/LootModal.jsx
-import React, { useEffect } from "react";
-import "./LootModal.css";
+import { useState } from "react";
+import styles from "./LootModal.module.css";
+import {
+  getTierBackgroundStyle,
+  getTierDisplayName,
+} from "../../../utils/tierColors";
 
-function LootModal({
-  selectedItems,
-  user,
-  onEquipItem,
-  onSellItem,
-  onSellAll,
-}) {
-  const getTierColor = (tier) => {
-    const colors = {
-      凡品: "#808080",
-      良品: "#008000",
-      上品: "#008B8B",
-      极品: "#DDA0DD",
-      灵品: "#FFFF00",
-      王品: "#FFA500",
-      圣品: "#FF0000",
-      帝品: "#FFC0CB",
-      "帝品.精": "#800080",
-      "帝品.珍": "#006400",
-      "帝品.极": "#00008B",
-      "帝品.绝": "#4B0082",
-      "仙品.精": "#B8860B",
-      "仙品.极": "#8B0000",
-    };
-    return colors[tier] || "#808080";
-  };
+function LootModal({ items, onClose, onEquip, onCompare }) {
+  const [selectedItems, setSelectedItems] = useState([]);
 
-  const getEquipmentIcon = (type) => {
-    const icons = {
-      武器: "⚔️",
-      头部: "👑",
-      身体: "👔",
-      脚部: "👢",
-      腰部: "🔗",
-      护臂: "🛡️",
-      戒指: "💍",
-      手部: "🧤",
-      腿部: "👖",
-      项链: "📿",
-      护身符: "🔮",
-      暗器: "🗡️",
-    };
-    return icons[type] || "📦";
-  };
-
-  const isPowerUpgrade = (item) => {
-    const currentItem = user.equippedItems?.[item.type];
-    if (!currentItem) return true; // New slot, always upgrade
-    return item.powerRatingBonus > currentItem.powerRatingBonus;
-  };
-
-  const autoEquipNewItems = () => {
-    // Auto-equip items for empty slots
-    selectedItems.forEach((item) => {
-      if (!user.equippedItems?.[item.type]) {
-        onEquipItem(item);
-      }
-    });
-  };
-
-  // Auto-equip on mount if user has empty slots
-  React.useEffect(() => {
-    const hasEmptySlots = selectedItems.some(
-      (item) => !user.equippedItems?.[item.type]
-    );
-    if (hasEmptySlots) {
-      autoEquipNewItems();
+  const handleItemSelect = (item) => {
+    if (selectedItems.includes(item)) {
+      setSelectedItems(selectedItems.filter((i) => i !== item));
+    } else if (selectedItems.length < 2) {
+      setSelectedItems([...selectedItems, item]);
     }
-  }, []);
+  };
 
-  return (
-    <div className="loot-content">
-      <div className="loot-header">
-        <h3>战利品获得</h3>
-        <button className="sell-all-btn" onClick={onSellAll}>
-          全部出售
+  const handleCompare = () => {
+    if (selectedItems.length === 2) {
+      onCompare(selectedItems);
+    }
+  };
+
+  const handleEquip = (item) => {
+    onEquip(item);
+    onClose();
+  };
+
+  if (!items || items.length === 0) {
+    return (
+      <div className={styles.lootModal}>
+        <h3 className={styles.modalTitle}>战利品</h3>
+        <p className={styles.noItemsMessage}>没有获得任何战利品</p>
+        <button className={styles.closeButton} onClick={onClose}>
+          关闭
         </button>
       </div>
+    );
+  }
 
-      <div className="loot-grid">
-        {selectedItems.map((item, index) => (
+  return (
+    <div className={styles.lootModal}>
+      <div className={styles.modalHeader}>
+        <h3 className={styles.modalTitle}>战利品 ({items.length}件)</h3>
+        <div className={styles.headerActions}>
+          {selectedItems.length === 2 && (
+            <button className={styles.compareButton} onClick={handleCompare}>
+              对比装备
+            </button>
+          )}
+          <button className={styles.closeButton} onClick={onClose}>
+            关闭
+          </button>
+        </div>
+      </div>
+
+      <div className={styles.itemsGrid}>
+        {items.map((item, index) => (
           <div
             key={index}
-            className="loot-item-card"
-            onClick={() => (onEquipItem ? onEquipItem(item) : null)}
+            className={`${styles.lootItem} ${
+              selectedItems.includes(item) ? styles.selected : ""
+            }`}
+            onClick={() => handleItemSelect(item)}
           >
             <div
-              className="item-icon-container"
-              style={{ backgroundColor: getTierColor(item.tier) }}
+              className={styles.itemTier}
+              style={getTierBackgroundStyle(item.tier)}
             >
-              <div className="item-icon">{getEquipmentIcon(item.type)}</div>
-              {isPowerUpgrade(item) && (
-                <div className="upgrade-indicator">↗️</div>
+              {getTierDisplayName(item.tier)}
+            </div>
+
+            <div className={styles.itemInfo}>
+              <h4 className={styles.itemName}>{item.name}</h4>
+              <div className={styles.itemType}>{item.type}</div>
+
+              {item.stats && (
+                <div className={styles.itemStats}>
+                  {Object.entries(item.stats).map(([stat, value]) => (
+                    <div key={stat} className={styles.statLine}>
+                      <span className={styles.statName}>{stat}</span>
+                      <span className={styles.statValue}>+{value}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {item.specialEffects && item.specialEffects.length > 0 && (
+                <div className={styles.specialEffects}>
+                  {item.specialEffects.map((effect, effectIndex) => (
+                    <div key={effectIndex} className={styles.specialEffect}>
+                      {effect}
+                    </div>
+                  ))}
+                </div>
               )}
             </div>
 
-            <div className="item-info">
-              <div className="item-name">{item.name}</div>
-              <div className="item-level">Lv.{item.level}</div>
-              <div className="item-power">战力 +{item.powerRatingBonus}</div>
+            <div className={styles.itemActions}>
+              <button
+                className={styles.equipButton}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleEquip(item);
+                }}
+              >
+                装备
+              </button>
+              <div className={styles.levelRequirement}>
+                需要等级: {item.levelRequirement || 1}
+              </div>
             </div>
+
+            {selectedItems.includes(item) && (
+              <div className={styles.selectedIndicator}>已选择</div>
+            )}
           </div>
         ))}
       </div>
 
-      {selectedItems.length === 0 && (
-        <div className="no-items">
-          <p>所有物品已处理完毕</p>
+      <div className={styles.modalFooter}>
+        <div className={styles.instructions}>
+          点击装备进行选择，选择2件装备可进行对比
         </div>
-      )}
+        <div className={styles.selectionCount}>
+          已选择: {selectedItems.length}/2
+        </div>
+      </div>
     </div>
   );
 }

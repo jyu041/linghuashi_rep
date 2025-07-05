@@ -1,6 +1,12 @@
 // src/App.jsx
 import { useState, useEffect } from "react";
-import "./App.css";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
+import styles from "./App.module.css";
 import LoginPage from "./components/auth/LoginPage";
 import InitialSelection from "./components/auth/InitialSelection";
 import GameHomePage from "./components/game/GameHomePage";
@@ -8,88 +14,145 @@ import AdminPage from "./components/admin/AdminPage";
 
 function App() {
   const [user, setUser] = useState(null);
-  const [token, setToken] = useState(localStorage.getItem("token"));
+  const [token, setToken] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
-    validateToken();
-  }, []);
+    // Check for existing authentication
+    const storedToken = localStorage.getItem("authToken");
+    const storedUser = localStorage.getItem("user");
 
-  const validateToken = async () => {
-    if (!token) {
-      setLoading(false);
-      return;
-    }
-
-    try {
-      const response = await fetch("http://localhost:8080/api/auth/validate", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        setUser(data.user);
-      } else {
-        localStorage.removeItem("token");
-        setToken(null);
+    if (storedToken && storedUser) {
+      try {
+        setToken(storedToken);
+        setUser(JSON.parse(storedUser));
+      } catch (error) {
+        console.error("Error parsing stored user data:", error);
+        localStorage.removeItem("authToken");
+        localStorage.removeItem("user");
       }
-    } catch (error) {
-      console.error("Token validation failed:", error);
-      localStorage.removeItem("token");
-      setToken(null);
-    } finally {
-      setLoading(false);
     }
-  };
+    setLoading(false);
+  }, []);
 
   const handleLogin = (userData, authToken) => {
     setUser(userData);
     setToken(authToken);
-    localStorage.setItem("token", authToken);
+    localStorage.setItem("authToken", authToken);
+    localStorage.setItem("user", JSON.stringify(userData));
   };
 
   const handleLogout = () => {
     setUser(null);
     setToken(null);
-    localStorage.removeItem("token");
-    setIsAdmin(false);
+    localStorage.removeItem("authToken");
+    localStorage.removeItem("user");
   };
 
-  const handleInitialSelection = (updatedUser) => {
+  const handleInitialSelectionComplete = (updatedUser) => {
     setUser(updatedUser);
+    localStorage.setItem("user", JSON.stringify(updatedUser));
   };
 
   if (loading) {
     return (
-      <div className="loading-screen">
-        <div className="loading-spinner"></div>
-        <p>Loading...</p>
+      <div className={styles.app}>
+        <div className={styles.loadingContainer}>
+          <div className={styles.loadingSpinner}></div>
+          <p className={styles.loadingText}>加载中...</p>
+        </div>
       </div>
     );
   }
 
-  // Check for admin page access
-  if (window.location.pathname === "/admin" && token) {
-    return <AdminPage token={token} onLogout={handleLogout} />;
-  }
+  return (
+    <div className={styles.app}>
+      <Router>
+        <Routes>
+          {/* Public Routes */}
+          <Route
+            path="/login"
+            element={
+              !user ? (
+                <LoginPage onLogin={handleLogin} />
+              ) : user.needsInitialSelection ? (
+                <Navigate to="/initial-selection" replace />
+              ) : (
+                <Navigate to="/game" replace />
+              )
+            }
+          />
 
-  // Not logged in
-  if (!token || !user) {
-    return <LoginPage onLogin={handleLogin} />;
-  }
+          {/* Initial Selection Route */}
+          <Route
+            path="/initial-selection"
+            element={
+              user && user.needsInitialSelection ? (
+                <InitialSelection
+                  user={user}
+                  token={token}
+                  onComplete={handleInitialSelectionComplete}
+                />
+              ) : user ? (
+                <Navigate to="/game" replace />
+              ) : (
+                <Navigate to="/login" replace />
+              )
+            }
+          />
 
-  // Logged in but needs initial selection
-  if (!user.initialSelectionComplete) {
-    return (
-      <InitialSelection token={token} onComplete={handleInitialSelection} />
-    );
-  }
+          {/* Game Route */}
+          <Route
+            path="/game"
+            element={
+              user && !user.needsInitialSelection ? (
+                <GameHomePage
+                  user={user}
+                  token={token}
+                  onLogout={handleLogout}
+                />
+              ) : user ? (
+                <Navigate to="/initial-selection" replace />
+              ) : (
+                <Navigate to="/login" replace />
+              )
+            }
+          />
 
-  // Main game
-  return <GameHomePage user={user} token={token} onLogout={handleLogout} />;
+          {/* Admin Route */}
+          <Route
+            path="/admin"
+            element={
+              user && user.role === "admin" ? (
+                <AdminPage user={user} token={token} onLogout={handleLogout} />
+              ) : (
+                <Navigate to="/login" replace />
+              )
+            }
+          />
+
+          {/* Default redirect */}
+          <Route
+            path="/"
+            element={
+              user ? (
+                user.needsInitialSelection ? (
+                  <Navigate to="/initial-selection" replace />
+                ) : (
+                  <Navigate to="/game" replace />
+                )
+              ) : (
+                <Navigate to="/login" replace />
+              )
+            }
+          />
+
+          {/* Catch all route */}
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </Router>
+    </div>
+  );
 }
 
 export default App;

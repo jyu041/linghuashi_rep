@@ -1,88 +1,123 @@
 // src/components/game/modals/PlaceholderModal.jsx
-import "./PlaceholderModal.css";
+import styles from "./PlaceholderModal.module.css";
 
-function PlaceholderModal({ feature }) {
-  const getFeatureInfo = (featureName) => {
-    const features = {
-      掌天瓶: {
-        icon: "🏺",
-        description: "强大的P2W道具，可提升修炼速度",
-        comingSoon: "即将推出自动战斗和经验加成功能",
-      },
-      星海壶: {
-        icon: "🫖",
-        description: "传说级P2W道具，解锁高级功能",
-        comingSoon: "即将推出资源自动收集和稀有材料获取",
-      },
+function PlaceholderModal({ feature, onClose }) {
+  const getFeatureInfo = () => {
+    const featureMap = {
       福利: {
+        title: "福利中心",
+        description: "各种游戏福利和奖励",
         icon: "🎁",
-        description: "每日签到、活动奖励等福利系统",
-        comingSoon: "即将推出每日签到、月卡、成长基金等功能",
+        features: ["每日签到", "在线奖励", "成就奖励", "活动礼包"],
       },
       超值豪礼: {
+        title: "超值豪礼",
+        description: "限时特惠礼包和充值奖励",
         icon: "💝",
-        description: "限时礼包、战令、豪华奖励",
-        comingSoon: "即将推出战令系统、限时礼包和VIP特权",
+        features: ["充值礼包", "月卡特权", "限时优惠", "VIP福利"],
       },
       活动: {
+        title: "活动中心",
+        description: "各种游戏活动和赛事",
         icon: "🎯",
-        description: "各种游戏活动和竞赛",
-        comingSoon: "即将推出竞技场、公会战、限时活动",
+        features: ["限时活动", "节日庆典", "竞赛活动", "社区活动"],
       },
       限时礼包: {
+        title: "限时礼包",
+        description: "限时特价商品和礼包",
         icon: "⏰",
-        description: "限时特价礼包和促销活动",
-        comingSoon: "即将推出节日礼包、新手礼包、进阶礼包",
+        features: ["新手礼包", "升级礼包", "节日礼包", "特惠商城"],
       },
       新手礼包: {
+        title: "新手礼包",
+        description: "专为新玩家准备的礼包",
         icon: "🆕",
-        description: "新玩家专属福利礼包",
-        comingSoon: "即将推出新手引导、成长礼包、首充奖励",
+        features: ["入门装备", "经验加成", "货币奖励", "指导教程"],
+      },
+      掌天瓶: {
+        title: "掌天瓶",
+        description: "神秘的炼丹器具",
+        icon: "🏺",
+        features: ["炼制丹药", "提升属性", "特殊效果", "高级功能"],
+      },
+      星海壶: {
+        title: "星海壶",
+        description: "蕴含星辰力量的法器",
+        icon: "🫖",
+        features: ["星力收集", "属性增强", "特殊技能", "进阶功能"],
       },
       每日任务: {
+        title: "每日任务",
+        description: "每天可完成的任务挑战",
         icon: "📋",
-        description: "每日任务和成就系统",
-        comingSoon: "即将推出每日任务、周常任务、成就系统",
+        features: ["经验任务", "战斗任务", "收集任务", "社交任务"],
       },
       市场: {
+        title: "交易市场",
+        description: "玩家间的装备交易平台",
         icon: "🏪",
-        description: "装备交易、材料买卖市场",
-        comingSoon: "即将推出装备交易、材料商店、拍卖行",
+        features: ["装备交易", "材料买卖", "拍卖系统", "价格查询"],
       },
       仙途: {
+        title: "仙途历程",
+        description: "修仙之路的成就系统",
         icon: "🌟",
-        description: "成就系统和修炼进度奖励",
-        comingSoon: "即将推出修炼成就、境界奖励、称号系统",
+        features: ["境界提升", "成就奖励", "修炼进度", "仙途排行"],
       },
     };
 
     return (
-      features[featureName] || {
-        icon: "🔧",
-        description: "新功能正在开发中",
-        comingSoon: "敬请期待更多精彩内容",
+      featureMap[feature] || {
+        title: feature || "未知功能",
+        description: "该功能正在开发中",
+        icon: "⚙️",
+        features: ["敬请期待", "即将推出", "开发中", "筹备阶段"],
       }
     );
   };
 
-  const info = getFeatureInfo(feature);
+  const info = getFeatureInfo();
 
   return (
-    <div className="placeholder-content">
-      <div className="feature-icon">{info.icon}</div>
-      <h3 className="feature-title">{feature}</h3>
-      <p className="feature-description">{info.description}</p>
-      <div className="coming-soon">
-        <div className="coming-soon-badge">敬请期待</div>
-        <p>{info.comingSoon}</p>
+    <div className={styles.placeholderModal}>
+      <div className={styles.modalHeader}>
+        <div className={styles.featureIcon}>{info.icon}</div>
+        <h3 className={styles.modalTitle}>{info.title}</h3>
       </div>
-      <div className="development-status">
-        <div className="progress-indicator">
-          <div className="progress-bar">
-            <div className="progress-fill" style={{ width: "35%" }}></div>
-          </div>
-          <span className="progress-text">开发进度: 35%</span>
+
+      <div className={styles.modalContent}>
+        <div className={styles.description}>{info.description}</div>
+
+        <div className={styles.featureList}>
+          <h4 className={styles.featureListTitle}>功能特色:</h4>
+          <ul className={styles.features}>
+            {info.features.map((feature, index) => (
+              <li key={index} className={styles.featureItem}>
+                {feature}
+              </li>
+            ))}
+          </ul>
         </div>
+
+        <div className={styles.statusMessage}>
+          <div className={styles.statusIcon}>🚧</div>
+          <div className={styles.statusText}>
+            该功能正在紧张开发中，敬请期待！
+          </div>
+        </div>
+
+        <div className={styles.comingSoon}>
+          <div className={styles.progressBar}>
+            <div className={styles.progressFill}></div>
+          </div>
+          <div className={styles.progressText}>开发进度: 进行中...</div>
+        </div>
+      </div>
+
+      <div className={styles.modalActions}>
+        <button className={styles.closeButton} onClick={onClose}>
+          关闭
+        </button>
       </div>
     </div>
   );

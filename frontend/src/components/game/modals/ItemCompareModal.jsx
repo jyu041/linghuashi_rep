@@ -1,156 +1,118 @@
 // src/components/game/modals/ItemCompareModal.jsx
-import "./ItemCompareModal.css";
+import styles from "./ItemCompareModal.module.css";
+import {
+  getTierBackgroundStyle,
+  getTierDisplayName,
+} from "../../../utils/tierColors";
 
-function ItemCompareModal({ newItem, currentItem, onEquip, onSell }) {
-  const getTierColor = (tier) => {
-    const colors = {
-      凡品: "#808080",
-      良品: "#008000",
-      上品: "#008B8B",
-      极品: "#DDA0DD",
-      灵品: "#FFFF00",
-      王品: "#FFA500",
-      圣品: "#FF0000",
-      帝品: "#FFC0CB",
-      "帝品.精": "#800080",
-      "帝品.珍": "#006400",
-      "帝品.极": "#00008B",
-      "帝品.绝": "#4B0082",
-      "仙品.精": "#B8860B",
-      "仙品.极": "#8B0000",
-    };
-    return colors[tier] || "#808080";
-  };
-
-  const powerDifference =
-    newItem.powerRatingBonus - currentItem.powerRatingBonus;
-  const isUpgrade = powerDifference > 0;
-
-  const StatComparison = ({ label, newValue, currentValue }) => {
-    const diff = newValue - currentValue;
+function ItemCompareModal({ items, onClose }) {
+  if (!items || items.length < 2) {
     return (
-      <div className="stat-comparison">
-        <span className="stat-label">{label}:</span>
-        <div className="stat-values">
-          <span className="current-value">{currentValue}</span>
-          <span className="arrow">→</span>
-          <span
-            className={`new-value ${
-              diff > 0 ? "upgrade" : diff < 0 ? "downgrade" : "same"
-            }`}
-          >
-            {newValue}
-          </span>
-          {diff !== 0 && (
-            <span className={`diff ${diff > 0 ? "positive" : "negative"}`}>
-              ({diff > 0 ? "+" : ""}
-              {diff})
-            </span>
-          )}
-        </div>
+      <div className={styles.itemCompareModal}>
+        <h3 className={styles.modalTitle}>装备对比</h3>
+        <p className={styles.errorMessage}>需要至少2件装备进行对比</p>
+        <button className={styles.closeButton} onClick={onClose}>
+          关闭
+        </button>
       </div>
     );
+  }
+
+  const getAllStats = () => {
+    const allStats = new Set();
+    items.forEach((item) => {
+      if (item.stats) {
+        Object.keys(item.stats).forEach((stat) => allStats.add(stat));
+      }
+    });
+    return Array.from(allStats);
   };
 
+  const getStatValue = (item, stat) => {
+    return item.stats?.[stat] || 0;
+  };
+
+  const getBestStatValue = (stat) => {
+    return Math.max(...items.map((item) => getStatValue(item, stat)));
+  };
+
+  const allStats = getAllStats();
+
   return (
-    <div className="item-compare-content">
-      <h3 className="compare-title">装备对比</h3>
+    <div className={styles.itemCompareModal}>
+      <h3 className={styles.modalTitle}>装备对比</h3>
 
-      <div className="items-comparison">
-        {/* Current Item */}
-        <div className="item-section">
-          <h4 className="section-title">当前装备</h4>
-          <div className="item-card">
-            <div
-              className="item-tier-badge"
-              style={{ backgroundColor: getTierColor(currentItem.tier) }}
-            >
-              {currentItem.tier}
-            </div>
-            <div className="item-name">{currentItem.name}</div>
-            <div className="item-level">等级: {currentItem.level}</div>
-            <div className="item-stats">
-              <div>攻击: +{currentItem.attackBonus}</div>
-              <div>防御: +{currentItem.defenseBonus}</div>
-              <div>生命: +{currentItem.healthBonus}</div>
-              <div>速度: +{currentItem.speedBonus}</div>
-              <div className="power-rating">
-                战力: +{currentItem.powerRatingBonus}
+      <div className={styles.compareContainer}>
+        {/* Items Header */}
+        <div className={styles.itemsHeader}>
+          <div className={styles.statColumn}></div>
+          {items.map((item, index) => (
+            <div key={index} className={styles.itemColumn}>
+              <div className={styles.itemInfo}>
+                <h4 className={styles.itemName}>{item.name}</h4>
+                <div
+                  className={styles.itemTier}
+                  style={getTierBackgroundStyle(item.tier)}
+                >
+                  {getTierDisplayName(item.tier)}
+                </div>
+                <div className={styles.itemType}>{item.type}</div>
               </div>
             </div>
-          </div>
+          ))}
         </div>
 
-        {/* New Item */}
-        <div className="item-section">
-          <h4 className="section-title">新装备</h4>
-          <div className="item-card">
-            <div
-              className="item-tier-badge"
-              style={{ backgroundColor: getTierColor(newItem.tier) }}
-            >
-              {newItem.tier}
-            </div>
-            <div className="item-name">{newItem.name}</div>
-            <div className="item-level">等级: {newItem.level}</div>
-            <div className="item-stats">
-              <div>攻击: +{newItem.attackBonus}</div>
-              <div>防御: +{newItem.defenseBonus}</div>
-              <div>生命: +{newItem.healthBonus}</div>
-              <div>速度: +{newItem.speedBonus}</div>
-              <div className="power-rating">
-                战力: +{newItem.powerRatingBonus}
+        {/* Stats Comparison */}
+        <div className={styles.statsComparison}>
+          {allStats.map((stat) => {
+            const bestValue = getBestStatValue(stat);
+            return (
+              <div key={stat} className={styles.statRow}>
+                <div className={styles.statName}>{stat}</div>
+                {items.map((item, index) => {
+                  const value = getStatValue(item, stat);
+                  const isBest = value === bestValue && value > 0;
+                  return (
+                    <div
+                      key={index}
+                      className={`${styles.statValue} ${
+                        isBest ? styles.bestStat : ""
+                      }`}
+                    >
+                      {value > 0 ? `+${value}` : "-"}
+                    </div>
+                  );
+                })}
               </div>
-            </div>
+            );
+          })}
+        </div>
+
+        {/* Special Effects */}
+        <div className={styles.specialEffectsSection}>
+          <h4 className={styles.sectionTitle}>特殊效果</h4>
+          <div className={styles.effectsComparison}>
+            <div className={styles.statColumn}></div>
+            {items.map((item, index) => (
+              <div key={index} className={styles.itemColumn}>
+                {item.specialEffects && item.specialEffects.length > 0 ? (
+                  item.specialEffects.map((effect, effectIndex) => (
+                    <div key={effectIndex} className={styles.specialEffect}>
+                      {effect}
+                    </div>
+                  ))
+                ) : (
+                  <div className={styles.noEffects}>无特殊效果</div>
+                )}
+              </div>
+            ))}
           </div>
         </div>
       </div>
 
-      {/* Detailed Comparison */}
-      <div className="detailed-comparison">
-        <h4>属性变化</h4>
-        <StatComparison
-          label="攻击"
-          newValue={newItem.attackBonus}
-          currentValue={currentItem.attackBonus}
-        />
-        <StatComparison
-          label="防御"
-          newValue={newItem.defenseBonus}
-          currentValue={currentItem.defenseBonus}
-        />
-        <StatComparison
-          label="生命"
-          newValue={newItem.healthBonus}
-          currentValue={currentItem.healthBonus}
-        />
-        <StatComparison
-          label="速度"
-          newValue={newItem.speedBonus}
-          currentValue={currentItem.speedBonus}
-        />
-        <div className="power-comparison">
-          <span className="power-label">总战力变化:</span>
-          <span
-            className={`power-change ${isUpgrade ? "upgrade" : "downgrade"}`}
-          >
-            {isUpgrade ? "+" : ""}
-            {powerDifference}
-          </span>
-        </div>
-      </div>
-
-      {/* Action Buttons */}
-      <div className="action-buttons">
-        <button
-          className={`equip-btn ${isUpgrade ? "upgrade" : "downgrade"}`}
-          onClick={onEquip}
-        >
-          {isUpgrade ? "装备升级" : "装备替换"}
-          {isUpgrade && "⬆️"}
-        </button>
-        <button className="sell-btn" onClick={onSell}>
-          出售新装备 ({newItem.sellValue} 银币)
+      <div className={styles.modalActions}>
+        <button className={styles.closeButton} onClick={onClose}>
+          关闭
         </button>
       </div>
     </div>
